@@ -4,28 +4,34 @@ import java.util.regex.*;
 
 class Tokener {
 	
-	private static Pattern registers = Pattern.compile("^A|(?:R[0-7])$");
-	private static Pattern data = Pattern.compile("^#[0-9A-F]{2,2}$");
-	private static Pattern address = Pattern.compile("^[0-9A-F]{2,2}$");
+	private static Pattern registerDirect = Pattern.compile("^A|(?:R[0-7])$");
+	private static Pattern registerIndirect = Pattern.compile("^@(?:A|R[0-7])$");
+	private static Pattern immediate = Pattern.compile("^#(?:[0-9A-F]{2,2})|(?:[0-9A-F]{4,4})$");
+	private static Pattern addressDirect = Pattern.compile("^(?:[0-9A-F]{2,2})|(?:[0-9A-F]{4,4})$");
 	
-	private static boolean isRegister(String s) {
+	private static boolean isRegisterDirect(String s) {
 		
-		return registers.matcher(s).matches();
+		return registerDirect.matcher(s).matches();
 	}
 	
-	private static boolean isData(String s) {
+	private static boolean isImmediate(String s) {
 		
-		return data.matcher(s).matches();
+		return immediate.matcher(s).matches();
 	}
 	
-	private static boolean isAddress(String s) {
+	private static boolean isAddressDirect(String s) {
 		
-		return address.matcher(s).matches();
+		return addressDirect.matcher(s).matches();
+	}
+	
+	private static boolean isRegisterIndirect(String s) {
+		
+		return registerIndirect.matcher(s).matches();
 	}
 	
 	private static boolean isMovable(String[] s) {
 		
-		return (isAddress(s[0]) || isRegister(s[0])) && (isAddress(s[1]) || isRegister(s[1]) || isData(s[1]));
+		return (isRegisterDirect(s[0]) || isRegisterIndirect(s[0]) || isAddressDirect(s[0])) && (isRegisterDirect(s[1]) || isRegisterIndirect(s[1]) || isAddressDirect(s[1]) || isImmediate(s[1]));
 	}
 	
 	public static void tokenize(List<String> parsedLines) {
@@ -48,22 +54,28 @@ class Tokener {
 				else if(isMovable(operands)) {
 					System.out.print("Moving ");
 					
-					if(isData(operands[1]))
+					if(isImmediate(operands[1]))
 						System.out.print("data ");
 					
-					else if(isAddress(operands[1]))
+					else if(isAddressDirect(operands[1]))
 						System.out.print("value at address ");
 					
-					else if(isRegister(operands[1]))
+					else if(isRegisterDirect(operands[1]))
 						System.out.print("value at register ");
 						
-					System.out.print(operands[1] + " to ");
+					else if(isRegisterIndirect(operands[1]))
+						System.out.print("value pointed by register ");
 					
-					if(isAddress(operands[0]))
+					System.out.print(operands[1].replace('@', '\0').replace('#', '\0') + " to ");
+					
+					if(isAddressDirect(operands[0]))
 						System.out.print("address ");
 					
-					else if(isRegister(operands[0]))
+					else if(isRegisterDirect(operands[0]))
 						System.out.print("register ");
+						
+					else if(isRegisterIndirect(operands[0]))
+						System.out.print("location pointed by register ");
 					
 					System.out.println(operands[0]);
 				}

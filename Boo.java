@@ -11,9 +11,7 @@ class Boo {
 			parsedLines = Parser.parse(args[0]);
 			
 			if(parsedLines.size() > 0)
-				for(int i = 0; i < parsedLines.size(); i++)
-					if(parsedLines.get(i).startsWith("MOV"))
-						System.out.println(parsedLines.get(i));
+				Tokener.tokenize(parsedLines);
 		}
 		
 		else {
