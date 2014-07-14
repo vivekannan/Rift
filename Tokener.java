@@ -2,6 +2,10 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+class MOV {
+	
+}
+
 class Tokener {
 	
 	private static Pattern registerDirect = Pattern.compile("^A|(?:R[0-7])$");
