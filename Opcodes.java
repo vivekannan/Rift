@@ -15,11 +15,13 @@ class MOV {
 		this.isInternal = inEx;
 		this.operands = op;
 		this.translate();
+		
+		new Memory();
 	}
 	
 	private boolean isMovable(String[] s) {
 		
-		return (addressing.isRegisterDirect(s[0]) || addressing.isRegisterIndirect(s[0]) || addressing.isAddressDirect(s[0])) && (addressing.isRegisterDirect(s[1]) || addressing.isRegisterIndirect(s[1]) || addressing.isAddressDirect(s[1]) || addressing.isImmediate(s[1]));
+		return (addressingTypes.isRegisterDirect(s[0]) || addressingTypes.isRegisterIndirect(s[0]) || addressingTypes.isAddressDirect(s[0])) && (addressingTypes.isRegisterDirect(s[1]) || addressingTypes.isRegisterIndirect(s[1]) || addressingTypes.isAddressDirect(s[1]) || addressingTypes.isImmediate(s[1]));
 	}
 	
 	private int terminate() {
