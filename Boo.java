@@ -11,7 +11,7 @@ class Boo {
 			parsedLines = Parser.parse(args[0]);
 			
 			if(parsedLines.size() > 0)
-				Tokener.tokenize(parsedLines);
+				Tokenizer.tokenize(parsedLines);
 		}
 		
 		else {

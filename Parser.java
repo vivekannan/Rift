@@ -1,8 +1,8 @@
-//Parses a given .asm file by removing all comments and striping all extra whitespaces.
-//Parsed lines are then given to the Tokener class.
-
 import java.io.*;
 import java.util.*;
+
+//Parses a given .asm file by removing all comments and striping all extra whitespaces.
+//Parsed lines are then given to the Tokener class.
 
 class Parser {
 	
