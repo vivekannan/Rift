@@ -16,6 +16,13 @@ class ExternalROM {
 }
 
 class SpecialFunctionRegisters {
+	
+	private static short PC;
+	private static short DPTR;
+	private static byte SP;
+	private static byte A;
+	private static byte[] R = new byte[7];
+	private static byte PSW;
 }
 
 class GeneralPurposeRegisters {
