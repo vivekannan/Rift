@@ -36,11 +36,11 @@ class Parser {
 		}
 		
 		catch(FileNotFoundException e) {
-			System.out.println("File not found.");
+			System.out.println("File " + "\"" + Boo.getFileName() + "\"" + " not found.");
 		}
 			
 		catch(IOException e) {
-			System.out.println("File cannot be opened/closed.");
+			System.out.println("File " + "\"" + Boo.getFileName() + "\"" + " cannot be opened/closed.");
 		}
 		
 		return parsedLines;

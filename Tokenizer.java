@@ -20,7 +20,8 @@ class Tokenizer {
 			}
 			
 			else {
-				System.out.println("Only MOV is supported!");
+				System.out.println("Error.");
+				System.out.println(Boo.getFileName() + ": " + parsedLines.get(i));
 				return ;
 			}
 		}
