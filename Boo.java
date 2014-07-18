@@ -7,15 +7,13 @@ class Line {
 	public String rawLine;
 	public String parsedLine;
 	public int lineNumber;
-	public String label;
-	public String errorStatement;
+	public String label = "";
+	public String errorStatement = "";
 	public Mnemonics mnemonic;
 	
 	Line(String l, int ln) {
 		this.rawLine = l;
 		this.lineNumber = ln;
-		this.label = "";
-		this.errorStatement = "";
 	}
 }
 
@@ -27,40 +25,6 @@ class Boo {
 	
 	private static String fileName;
 	private static List<Line> lines = new ArrayList<Line>();
-	
-	public static void addLine(Line line) {
-		
-		lines.add(line);
-	}
-	
-	public static int getLineCount() {
-		
-		return lines.size();
-	}
-	
-	public static String getRawLine(int i) {
-		
-		return lines.get(i).rawLine;
-	}
-	
-	public static String getParsedLine(int i){
-		
-		return lines.get(i).parsedLine;
-	}
-	
-	public static void setParsedLine(String line, int i) {
-		
-		Line l = lines.get(i);
-		l.parsedLine = line;
-		lines.set(i, l);
-	}
-	
-	public static void setErrorStatement(String error, int i) {
-		
-		Line l = lines.get(i);
-		l.errorStatement = error;
-		lines.set(i, l);
-	}
 	
 	private static void printErrors() {
 		
@@ -76,9 +40,9 @@ class Boo {
 		if(args.length > 0) {
 			fileName = args[0];
 			
-			ReadFile.read(fileName);
-			Parser.parse();
-			Tokenizer.tokenize(fileName);
+			ReadFile.read(fileName, lines);
+			Parser.parse(lines);
+			Tokenizer.tokenize(fileName, lines);
 			
 			printErrors();
 		}

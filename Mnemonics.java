@@ -3,23 +3,21 @@ import java.util.regex.*;
 
 abstract class Mnemonics {
 	
-	abstract public int translate();
+	abstract public boolean translate();
 }
 
 class MOV extends Mnemonics {
-
-	private boolean isInternal;
+	
 	private String operands;
 	private int from, to;
 	private static Pattern[] instructions = { Pattern.compile("^(A)\\s?,\\s?(R[0-7]|#?[0-9][0-9A-Z]{0,3}|@R[01])$"), Pattern.compile("^(R[0-7]|@R[01])\\s?,\\s?(A|#?[0-9][0-9A-Z]{0,3})$"), Pattern.compile("^([0-9][0-9A-Z]{0,3})\\s?,\\s?(A|R[0-7]|#?[0-9][0-9A-Z]{0,3}|@R[01])$") };
 	
-	MOV(String op, boolean inEx) {
+	MOV(String op) {
 		
-		this.isInternal = inEx;
 		this.operands = op;
 	}
 	
-	public int translate() {
+	public boolean translate() {
 		
 		Matcher m;
 		
@@ -27,10 +25,10 @@ class MOV extends Mnemonics {
 			m = this.instructions[i].matcher(this.operands);
 			
 			if(m.matches())
-				return 1;
+				return true;
 		}
 		
-		return 0;
+		return false;
 	}
 }
 
@@ -43,11 +41,11 @@ class ADD extends Mnemonics {
 		this.operands = op;
 	}
 	
-	public int translate() {
+	public boolean translate() {
 		
 		Matcher m = this.instruction.matcher(this.operands);
 		
-		return m.matches() ? 1: 0;
+		return m.matches();
 	}
 }
 
@@ -60,13 +58,10 @@ class INC extends Mnemonics {
 		this.operands = op;
 	}
 	
-	public int translate() {
+	public boolean translate() {
 		
 		Matcher m = this.instruction.matcher(this.operands);
 		
-		if(m.matches())
-			return 1;
-		
-		return 0;
+		return m.matches();
 	}
 }
