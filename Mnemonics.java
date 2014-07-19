@@ -8,9 +8,10 @@ abstract class Mnemonics {
 
 class MOV extends Mnemonics {
 	
+	private int type;
 	private String operands;
 	private int from, to;
-	private static Pattern[] instructions = { Pattern.compile("^(A)\\s?,\\s?(R[0-7]|#?[0-9][0-9A-Z]{0,3}|@R[01])$"), Pattern.compile("^(R[0-7]|@R[01])\\s?,\\s?(A|#?[0-9][0-9A-Z]{0,3})$"), Pattern.compile("^([0-9][0-9A-Z]{0,3})\\s?,\\s?(A|R[0-7]|#?[0-9][0-9A-Z]{0,3}|@R[01])$") };
+	private static Pattern[] instructions = { Pattern.compile("^(A)\\s?,\\s?(R[0-7]|#?(?:0[A-Z]|[0-9])[0-9A-Z]{0,1}|@R[01])$"), Pattern.compile("^(R[0-7]|@R[01])\\s?,\\s?(A|#?(?:0[A-Z]|[0-9])[0-9A-Z]{0,1})$"), Pattern.compile("^((?:0[A-Z]|[0-9])[0-9A-Z]{0,1})\\s?,\\s?(A|R[0-7]|#?(?:0[A-Z]|[0-9])[0-9A-Z]{0,1}|@R[01])$") };
 	
 	MOV(String op) {
 		
@@ -34,8 +35,9 @@ class MOV extends Mnemonics {
 
 class ADD extends Mnemonics {
 	
+	private int type;
 	private String operands;
-	private static Pattern instruction = Pattern.compile("^(A)\\s?,\\s?(R[0-7]|@R[01]|#?[0-9][0-9A-Z]{0,3})$");
+	private static Pattern instruction = Pattern.compile("^(A)\\s?,\\s?(R[0-7]|@R[01]|#?(?:0[A-Z]|[0-9])[0-9A-Z]{0,1})$");
 	
 	ADD(String op) {
 		this.operands = op;
@@ -49,19 +51,74 @@ class ADD extends Mnemonics {
 	}
 }
 
-class INC extends Mnemonics {
+class IDC extends Mnemonics {
+	
+	private int type;
+	private String operands;
+	private static Pattern[] instructions = { Pattern.compile("^(A|R[0-7]|@R[01]|(?:0[A-Z]|[0-9])[0-9A-Z]{0,1}|DPTR)$"), Pattern.compile("^(A|R[0-7]|@R[01]|(?:0[A-Z]|[0-9])[0-9A-Z]{0,1})$") };
+	
+	IDC(String op, int t) {
+		this.operands = op;
+		this.type = t;
+	}
+	
+	public boolean translate() {
+		
+		Matcher m = this.instructions[this.type].matcher(this.operands);
+		
+		return m.matches();
+	}
+}
+
+class MULDIV extends Mnemonics {
 	
 	private String operands;
-	private static Pattern instruction = Pattern.compile("^(A|R[0-7]|@R[01]|[0-9][0-9A-Z]{0,3})$");
 	
-	INC(String op) {
+	MULDIV(String op) {
 		this.operands = op;
 	}
 	
 	public boolean translate() {
 		
-		Matcher m = this.instruction.matcher(this.operands);
+		return this.operands.equals("AB");
+	}
+}
+
+class DA extends Mnemonics {
+	
+	private String operands;
+	
+	DA(String op) {
+		this.operands = op;
+	}
+	
+	public boolean translate() {
 		
-		return m.matches();
+		return this.operands.equals("A");
+	}
+}
+
+class AOXL extends Mnemonics {
+	
+	private int type;
+	private String operands;
+	private static Pattern[] instructions = { Pattern.compile("^(A)\\s?,\\s?(R[0-7]|#?(?:0[A-Z]|[0-9])[0-9A-Z]{0,1}|@R[01])$"), Pattern.compile("^(?:0[A-Z]|[0-9])[0-9A-Z]{0,1}\\s?,\\s?(A|#(?:0[A-Z]|[0-9])[0-9A-Z]{0,1})$") };
+	
+	AOXL(String op) {
+		this.operands = op;
+	}
+	
+	public boolean translate() {
+		
+		Matcher m;
+		
+		for(int i = 0; i < this.instructions.length; i++) {
+			m = this.instructions[i].matcher(this.operands);
+			
+			if(m.matches())
+				return true;
+		}
+		
+		return false;
 	}
 }

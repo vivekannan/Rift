@@ -1,37 +1,22 @@
 import java.io.*;
 import java.util.*;
 
-
-class Line {
-	
-	public String rawLine;
-	public String parsedLine;
-	public int lineNumber;
-	public String label = "";
-	public String errorStatement = "";
-	public Mnemonics mnemonic;
-	
-	Line(String l, int ln) {
-		this.rawLine = l;
-		this.lineNumber = ln;
-	}
-}
-
 class Boo {
 	
-	static {
-		HelperClasses h;
-	}
+	HelperClasses h;
+	Mnemonics mn;
 	
 	private static String fileName;
 	private static List<Line> lines = new ArrayList<Line>();
 	
-	private static void printErrors() {
+	private static void printLineErrors() {
+		
+		String e;
 		
 		for(int i = 0; i < lines.size(); i++) {
-			String error = lines.get(i).errorStatement;
-			if(error.length() > 0)
-				System.out.println(error);
+			e = lines.get(i).errorStatement;
+			if(e != null)
+				System.out.println(e);
 		}
 	}
 	
@@ -44,7 +29,7 @@ class Boo {
 			Parser.parse(lines);
 			Tokenizer.tokenize(fileName, lines);
 			
-			printErrors();
+			printLineErrors();
 		}
 		
 		else

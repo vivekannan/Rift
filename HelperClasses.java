@@ -2,9 +2,20 @@ import java.io.*;
 import java.util.*;
 
 class HelperClasses {
+}
+
+class Line {
 	
-	static {
-		Mnemonics m;
+	public String rawLine;
+	public String parsedLine;
+	public int lineNumber;
+	public String label;
+	public String errorStatement;
+	public Mnemonics mnemonic;
+	
+	Line(String l, int ln) {
+		this.rawLine = l;
+		this.lineNumber = ln;
 	}
 }
 
@@ -57,7 +68,6 @@ class Parser {
 				line = line.substring(0, commentIndex);
 			
 			temp.parsedLine = line.trim().replaceAll("\\s+", " ");;
-			lines.set(i, temp);
 		}
 	}
 }
@@ -82,23 +92,29 @@ class Tokenizer {
 					if(tokens[0].equals("MOV") || tokens[0].equals("MOVX")) // same as below.
 						m = new MOV(tokens[1]);
 					
-					else if(tokens[0].equals("ADD") || tokens[0].equals("ADDC") || tokens[0].equals("SUBB")) // Pass respective arguments to ADD class to differentitae b/w the instructions.
+					else if(tokens[0].equals("ADD") || tokens[0].equals("ADDC") || tokens[0].equals("SUBB")) // Pass respective arguments to ADD class to differentiate b/w the instructions.
 						m = new ADD(tokens[1]);
 					
-					else if(tokens[0].equals("INC") || tokens[0].equals("DEC")) // same as above
-						m = new INC(tokens[1]);
+					else if(tokens[0].equals("INC")) // same as above
+						m = new IDC(tokens[1], 0);
+					
+					else if(tokens[0].equals("DEC"))
+						m = new IDC(tokens[1], 1);
+					
+					else if(tokens[0].equals("ANL") || tokens[0].equals("ORL") || tokens[0].equals("XRL"))
+						m = new AOXL(tokens[1]);
 					
 					else {
-						temp.errorStatement = String.format("%s::%d %s", fileName, i + 1, temp.rawLine);
+						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unindentified Mnemonic " + tokens[0], temp.rawLine);
 						continue;
 					}
 					
 					if(!m.translate())
-						temp.errorStatement = String.format("%s::%d %s", fileName, i + 1, temp.rawLine);
+						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Invalid operand(s) for Mnemonic " + tokens[0], temp.rawLine);
 				}
 				
 				else
-					temp.errorStatement = String.format("%s::%d %s", fileName, i + 1, temp.rawLine);
+					temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unidentified statement.", temp.rawLine);
 			}
 		}
 	}
