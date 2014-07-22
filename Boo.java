@@ -3,9 +3,6 @@ import java.util.*;
 
 class Boo {
 	
-	HelperClasses h;
-	Mnemonics mn;
-	
 	private static String fileName;
 	private static List<Line> lines = new ArrayList<Line>();
 	

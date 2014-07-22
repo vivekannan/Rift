@@ -11,7 +11,6 @@ class Line {
 	public int lineNumber;
 	public String label;
 	public String errorStatement;
-	public Mnemonics mnemonic;
 	
 	Line(String l, int ln) {
 		this.rawLine = l;
@@ -89,29 +88,65 @@ class Tokenizer {
 				
 				if(tokens.length == 2) {
 					
-					if(tokens[0].equals("MOV") || tokens[0].equals("MOVX")) // same as below.
+					if(tokens[0].equals("MOV"))
 						m = new MOV(tokens[1]);
 					
-					else if(tokens[0].equals("ADD") || tokens[0].equals("ADDC") || tokens[0].equals("SUBB")) // Pass respective arguments to ADD class to differentiate b/w the instructions.
+					else if(tokens[0].equals("MOVC"))
+						m = new MOVC(tokens[1]);
+					
+					else if(tokens[0].equals("MOVX"))
+						m = new MOVX(tokens[1]);
+					
+					else if(tokens[0].equals("ADD"))
 						m = new ADD(tokens[1]);
 					
-					else if(tokens[0].equals("INC")) // same as above
-						m = new IDC(tokens[1], 0);
+					else if(tokens[0].equals("ADDC"))
+						m = new ADDC(tokens[1]);
+					
+					else if(tokens[0].equals("SUBB"))
+						m = new SUBB(tokens[1]);
+					
+					else if(tokens[0].equals("INC"))
+						m = new INC(tokens[1]);
 					
 					else if(tokens[0].equals("DEC"))
-						m = new IDC(tokens[1], 1);
+						m = new DEC(tokens[1]);
 					
-					else if(tokens[0].equals("ANL") || tokens[0].equals("ORL") || tokens[0].equals("XRL"))
-						m = new AOXL(tokens[1]);
+					else if(tokens[0].equals("MUL"))
+						m = new MUL(tokens[1]);
+					
+					else if(tokens[0].equals("DIV"))
+						m = new DIV(tokens[1]);
+					
+					else if(tokens[0].equals("DA"))
+						m = new DA(tokens[1]);
+					
+					else if(tokens[0].equals("ANL"))
+						m = new ANL(tokens[1]);
+					
+					else if(tokens[0].equals("ORL"))
+						m = new ORL(tokens[1]);
+					
+					else if(tokens[0].equals("XRL"))
+						m = new XRL(tokens[1]);
+					
+					else if(tokens[0].equals("PUSH"))
+						m = new PUSH(tokens[1]);
+						
+					else if(tokens[0].equals("POP"))
+						m = new POP(tokens[1]);
 					
 					else {
 						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unindentified Mnemonic " + tokens[0], temp.rawLine);
 						continue;
 					}
 					
-					if(!m.translate())
+					if(!m.validate())
 						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Invalid operand(s) for Mnemonic " + tokens[0], temp.rawLine);
 				}
+				
+				else if(tokens[0].equals("END"))
+					System.exit(0);
 				
 				else
 					temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unidentified statement.", temp.rawLine);
