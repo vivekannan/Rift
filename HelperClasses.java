@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.lang.reflect.Constructor;
 
 class HelperClasses {
 }
@@ -9,19 +10,23 @@ class Line {
 	public String rawLine;
 	public String parsedLine;
 	public int lineNumber;
-	public String label;
 	public String errorStatement;
 	
 	Line(String l, int ln) {
 		this.rawLine = l;
 		this.lineNumber = ln;
 	}
+	
+	public void setError(String error, String fileName) {
+		
+		this.errorStatement = String.format("%s::%d: %s\n%s", fileName, this.lineNumber, error, this.rawLine);
+	}
 }
 
 class ReadFile {
 	
 	private static BufferedReader assemblySource = null;
-	private static String line = new String();
+	private static String line;
 	
 	public static void read(String fileName, List<Line> lines) {
 		
@@ -66,7 +71,7 @@ class Parser {
 			if(commentIndex != -1)
 				line = line.substring(0, commentIndex);
 			
-			temp.parsedLine = line.trim().replaceAll("\\s+", " ");;
+			temp.parsedLine = line.trim().replaceAll("\\s+", " ").replaceAll("\\s?,\\s?", ",");
 		}
 	}
 }
@@ -77,6 +82,7 @@ class Tokenizer {
 		
 		Mnemonics m;
 		Line temp;
+		Constructor c;
 		
 		for(int i = 0; i < lines.size(); i++) {
 			
@@ -87,69 +93,24 @@ class Tokenizer {
 				String[] tokens = line.split(" ", 2);
 				
 				if(tokens.length == 2) {
-					
-					if(tokens[0].equals("MOV"))
-						m = new MOV(tokens[1]);
-					
-					else if(tokens[0].equals("MOVC"))
-						m = new MOVC(tokens[1]);
-					
-					else if(tokens[0].equals("MOVX"))
-						m = new MOVX(tokens[1]);
-					
-					else if(tokens[0].equals("ADD"))
-						m = new ADD(tokens[1]);
-					
-					else if(tokens[0].equals("ADDC"))
-						m = new ADDC(tokens[1]);
-					
-					else if(tokens[0].equals("SUBB"))
-						m = new SUBB(tokens[1]);
-					
-					else if(tokens[0].equals("INC"))
-						m = new INC(tokens[1]);
-					
-					else if(tokens[0].equals("DEC"))
-						m = new DEC(tokens[1]);
-					
-					else if(tokens[0].equals("MUL"))
-						m = new MUL(tokens[1]);
-					
-					else if(tokens[0].equals("DIV"))
-						m = new DIV(tokens[1]);
-					
-					else if(tokens[0].equals("DA"))
-						m = new DA(tokens[1]);
-					
-					else if(tokens[0].equals("ANL"))
-						m = new ANL(tokens[1]);
-					
-					else if(tokens[0].equals("ORL"))
-						m = new ORL(tokens[1]);
-					
-					else if(tokens[0].equals("XRL"))
-						m = new XRL(tokens[1]);
-					
-					else if(tokens[0].equals("PUSH"))
-						m = new PUSH(tokens[1]);
+					try {
 						
-					else if(tokens[0].equals("POP"))
-						m = new POP(tokens[1]);
-					
-					else {
-						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unindentified Mnemonic " + tokens[0], temp.rawLine);
-						continue;
+						m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
+						
+						if(!m.validate())
+							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0], fileName);
 					}
 					
-					if(!m.validate())
-						temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Invalid operand(s) for Mnemonic " + tokens[0], temp.rawLine);
+					catch(Exception e) {
+						temp.setError("Unindentified Mnemonic " + tokens[0], fileName);
+					}
 				}
 				
 				else if(tokens[0].equals("END"))
-					System.exit(0);
+						System.exit(0);
 				
 				else
-					temp.errorStatement = String.format("%s:%d: %s\n%s", fileName, i + 1, "Unidentified statement.", temp.rawLine);
+					temp.setError("Unidentified statement.", fileName);
 			}
 		}
 	}

@@ -1,0 +1,27 @@
+Mnemonics
+	MOV
+	MOVX
+	MOVC
+	ADD
+		ADDC
+		SUBB
+	INC
+	DEC
+	MUL
+		DIV
+	ANL
+		ORL
+	XRL
+	PUSH
+		POP
+	DA
+		RL
+		RLC
+		RR
+		RRC
+		SWAP
+	XCH
+		XCHD
+	CLR
+		CLP
+		SETB
