@@ -270,4 +270,3 @@ class SETB extends CLR {
 		super(operands);
 	}
 }
-
