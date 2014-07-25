@@ -35,8 +35,8 @@ class MOV extends Mnemonics {
 		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
 		Pattern.compile("^(R[0-7]|@R[01]),(A|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
 		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),(A|R[0-7]|@R[01]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
-		Pattern.compile("^(DPTR),(#(?:[01]{1,16}B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
-		Pattern.compile("^(C,(?:[01]{1,16}B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|(?:[01]{1,16}B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),C)$")
+		Pattern.compile("^(DPTR),(#(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
+		Pattern.compile("^(C,(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),C)$")
 	};
 	
 	public MOV(String operands) {
@@ -137,7 +137,7 @@ class ANL extends Mnemonics {
 	final private static Pattern[] instructions = {
 		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
 		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$"),
-		Pattern.compile("^C,/?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
+		Pattern.compile("^(C,//?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$")
 	};
 	
 	public ANL(String operands) {

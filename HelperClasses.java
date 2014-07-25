@@ -9,8 +9,10 @@ class Line {
 	
 	public String rawLine;
 	public String parsedLine;
+	public String label;
 	public int lineNumber;
 	public String errorStatement;
+	public Mnemonics m;
 	
 	Line(String l, int ln) {
 		this.rawLine = l;
@@ -45,7 +47,7 @@ class ReadFile {
 			System.out.println(fileName + " not found.");
 			System.exit(0);
 		}
-			
+		
 		catch(IOException e) {
 			System.out.println(fileName + " cannot be opened/closed.");
 			System.exit(0);
@@ -55,23 +57,22 @@ class ReadFile {
 
 class Parser {
 	
-	private static String line = new String();
-	
 	public static void parse(List<Line> lines) {
 		
-		int commentIndex;
 		Line temp;
+		String line;
+		int commentIndex;
 		
 		for(int i = 0; i < lines.size(); i++) {
 			
 			temp = lines.get(i);
-			String line = temp.rawLine;
+			line = temp.rawLine;
 			commentIndex = line.indexOf(';');
 			
 			if(commentIndex != -1)
 				line = line.substring(0, commentIndex);
 			
-			temp.parsedLine = line.trim().replaceAll("\\s+", " ").replaceAll("\\s?,\\s?", ",");
+			temp.parsedLine = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",");
 		}
 	}
 }
@@ -80,34 +81,40 @@ class Tokenizer {
 	
 	public static void tokenize(String fileName, List<Line> lines) {
 		
-		Mnemonics m;
 		Line temp;
-		Constructor c;
+		String line;
+		String[] tokens;
 		
 		for(int i = 0; i < lines.size(); i++) {
 			
 			temp = lines.get(i);
-			String line = temp.parsedLine;
+			line = temp.parsedLine;
+			
+			if(line.matches("^[A-Z][A-Z0-9]*: .*$")) {
+				String[] s = line.split(": ", 2);
+				temp.label = s[0];
+				line = s[1];
+			}
 			
 			if(line.length() > 0) {
-				String[] tokens = line.split(" ", 2);
+				tokens = line.split(" ", 2);
 				
 				if(tokens.length == 2) {
 					try {
 						
-						m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
+						temp.m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
 						
-						if(!m.validate())
+						if(!temp.m.validate())
 							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0], fileName);
 					}
 					
 					catch(Exception e) {
-						temp.setError("Unindentified Mnemonic " + tokens[0], fileName);
+						temp.setError("Unindentified Mnemonic: " + tokens[0], fileName);
 					}
 				}
 				
 				else if(tokens[0].equals("END"))
-						System.exit(0);
+					return;
 				
 				else
 					temp.setError("Unidentified statement.", fileName);
