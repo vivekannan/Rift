@@ -90,13 +90,14 @@ class Tokenizer {
 			temp = lines.get(i);
 			line = temp.parsedLine;
 			
-			if(line.matches("^[A-Z][A-Z0-9]*: .*$")) {
-				String[] s = line.split(": ", 2);
-				temp.label = s[0];
-				line = s[1];
-			}
-			
 			if(line.length() > 0) {
+				
+				if(line.matches("^[A-Z][A-Z0-9]*: .*$")) {
+					String[] s = line.split(": ", 2);
+					temp.label = s[0];
+					line = s[1];
+				}
+				
 				tokens = line.split(" ", 2);
 				
 				if(tokens.length == 2) {
@@ -112,6 +113,9 @@ class Tokenizer {
 						temp.setError("Unindentified Mnemonic: " + tokens[0], fileName);
 					}
 				}
+				
+				else if(tokens[0].equals("NOP"))
+					continue;
 				
 				else if(tokens[0].equals("END"))
 					return;

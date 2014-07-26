@@ -5,6 +5,7 @@ class Mnemonics {
 	
 	private String operands;
 	private Pattern[] instructions;
+	private Matcher match;
 	
 	Mnemonics(String operands, Pattern[] instructions) {
 		
@@ -14,12 +15,10 @@ class Mnemonics {
 	
 	public boolean validate() {
 	
-		Matcher m;
-		
 		for(int i = 0; i < this.instructions.length; i++) {
-			m = this.instructions[i].matcher(this.operands);
+			match = this.instructions[i].matcher(this.operands);
 			
-			if(m.matches())
+			if(match.matches())
 				return true;
 		}
 		
@@ -267,6 +266,49 @@ class CPL extends CLR {
 class SETB extends CLR {
 	
 	public SETB(String operands) {
+		super(operands);
+	}
+}
+
+class JC extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^([A-Z][A-Z0-9]*)$")
+	};
+	
+	public JC(String operands) {
+		super(operands, instructions);
+	}
+}
+
+class JNC extends JC {
+	
+	JNC(String operands) {
+		super(operands);
+	}
+}
+
+class JB extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([A-Z][A-Z0-9]*)$")
+	};
+	
+	public JB(String operands) {
+		super(operands, instructions);
+	}
+}
+
+class JNB extends JB {
+	
+	JNB(String operands) {
+		super(operands);
+	}
+}
+
+class JBC extends JB {
+	
+	JBC(String operands) {
 		super(operands);
 	}
 }

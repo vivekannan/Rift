@@ -25,3 +25,8 @@ Mnemonics
 	CLR
 		CLP
 		SETB
+	JC
+		JNC
+	JB
+		JNB
+		JBC
