@@ -1,25 +1,29 @@
-import java.io.*;
-import java.util.*;
 import java.lang.reflect.Constructor;
+import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
+import java.util.List;
 
 class HelperClasses {
 }
 
 class Line {
 	
-	public String rawLine;
-	public String parsedLine;
-	public String label;
-	public int lineNumber;
-	public String errorStatement;
-	public Mnemonics m;
+	String rawLine;
+	String parsedLine;
+	String label;
+	String opCode;
+	int lineNumber;
+	String errorStatement;
+	Mnemonics m;
 	
 	Line(String l, int ln) {
 		this.rawLine = l;
 		this.lineNumber = ln;
 	}
 	
-	public void setError(String error, String fileName) {
+	void setError(String error, String fileName) {
 		
 		this.errorStatement = String.format("%s::%d: %s\n%s", fileName, this.lineNumber, error, this.rawLine);
 	}
@@ -30,7 +34,7 @@ class ReadFile {
 	private static BufferedReader assemblySource = null;
 	private static String line;
 	
-	public static void read(String fileName, List<Line> lines) {
+	static void read(String fileName, List<Line> lines) {
 		
 		int i = 0;
 		
@@ -57,7 +61,7 @@ class ReadFile {
 
 class Parser {
 	
-	public static void parse(List<Line> lines) {
+	static void parse(List<Line> lines) {
 		
 		Line temp;
 		String line;
@@ -79,7 +83,7 @@ class Parser {
 
 class Tokenizer {
 	
-	public static void tokenize(String fileName, List<Line> lines) {
+	static void tokenize(String fileName, List<Line> lines) {
 		
 		Line temp;
 		String line;

@@ -1,5 +1,5 @@
-import java.io.*;
-import java.util.regex.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 class Mnemonics {
 	
@@ -13,8 +13,8 @@ class Mnemonics {
 		this.instructions = instructions;
 	}
 	
-	public boolean validate() {
-	
+	boolean validate() {
+		
 		for(int i = 0; i < this.instructions.length; i++) {
 			match = this.instructions[i].matcher(this.operands);
 			
@@ -283,7 +283,7 @@ class JC extends Mnemonics {
 
 class JNC extends JC {
 	
-	JNC(String operands) {
+	public JNC(String operands) {
 		super(operands);
 	}
 }
@@ -301,14 +301,14 @@ class JB extends Mnemonics {
 
 class JNB extends JB {
 	
-	JNB(String operands) {
+	public JNB(String operands) {
 		super(operands);
 	}
 }
 
 class JBC extends JB {
 	
-	JBC(String operands) {
+	public JBC(String operands) {
 		super(operands);
 	}
 }
