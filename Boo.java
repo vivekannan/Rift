@@ -23,10 +23,10 @@ class Line {
 
 class Boo {
 	
-	private static String fileName;
-	private static List<Line> lines = new ArrayList<Line>();
+	static String fileName;
+	static List<Line> lines = new ArrayList<Line>();
 	
-	private static boolean printLineErrors() {
+	static boolean printLineErrors() {
 		
 		boolean errors = false;
 		String e;
@@ -47,9 +47,9 @@ class Boo {
 		if(args.length > 0) {
 			fileName = args[0];
 			
-			HelperClasses.read(fileName, lines);
-			HelperClasses.parse(lines);
-			HelperClasses.tokenize(lines);
+			HelperClasses.read();
+			HelperClasses.parse();
+			HelperClasses.tokenize();
 			
 			if(!printLineErrors())
 				System.out.println("All systems nominal.");

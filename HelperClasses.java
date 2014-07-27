@@ -3,45 +3,44 @@ import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileReader;
-import java.util.List;
 
 class HelperClasses {
 	
-	static void read(String fileName, List<Line> lines) {
+	static void read() {
 		
 		int i = 0;
 		String line;
 		BufferedReader assemblySource = null;
 		
 		try {
-			assemblySource = new BufferedReader(new FileReader(fileName));
+			assemblySource = new BufferedReader(new FileReader(Boo.fileName));
 			
 			while((line = assemblySource.readLine()) != null)
-				lines.add(new Line(line, ++i));
+				Boo.lines.add(new Line(line, ++i));
 			
 			assemblySource.close();
 		}
 		
 		catch(FileNotFoundException e) {
-			System.out.println(fileName + " not found.");
+			System.out.println(Boo.fileName + " not found.");
 			System.exit(0);
 		}
 		
 		catch(IOException e) {
-			System.out.println(fileName + " cannot be opened/closed.");
+			System.out.println(Boo.fileName + " cannot be opened/closed.");
 			System.exit(0);
 		}
 	}
 	
-	static void parse(List<Line> lines) {
+	static void parse() {
 		
 		Line temp;
 		String line;
 		int commentIndex;
 		
-		for(int i = 0; i < lines.size(); i++) {
+		for(int i = 0; i < Boo.lines.size(); i++) {
 			
-			temp = lines.get(i);
+			temp = Boo.lines.get(i);
 			line = temp.rawLine;
 			commentIndex = line.indexOf(';');
 			
@@ -52,15 +51,15 @@ class HelperClasses {
 		}
 	}
 	
-	static void tokenize(List<Line> lines) {
+	static void tokenize() {
 		
 		Line temp;
 		String line;
 		String[] tokens;
 		
-		for(int i = 0; i < lines.size(); i++) {
+		for(int i = 0; i < Boo.lines.size(); i++) {
 			
-			temp = lines.get(i);
+			temp = Boo.lines.get(i);
 			line = temp.parsedLine;
 			
 			if(line.length() > 0) {
