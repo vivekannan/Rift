@@ -30,3 +30,16 @@ Mnemonics
 	JB
 		JNB
 		JBC
+	ACALL
+		LCALL
+		AJMP
+		LJMP
+		SJMP
+		JZ
+		JNZ
+	RET
+		RETI
+		NOP
+	JMP
+	CJNE
+	DJNZ

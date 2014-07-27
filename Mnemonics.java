@@ -7,6 +7,9 @@ class Mnemonics {
 	private Pattern[] instructions;
 	private Matcher match;
 	
+	Mnemonics() {
+	}
+	
 	Mnemonics(String operands, Pattern[] instructions) {
 		
 		this.operands = operands;
@@ -310,5 +313,101 @@ class JBC extends JB {
 	
 	public JBC(String operands) {
 		super(operands);
+	}
+}
+
+class ACALL extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
+	};
+	
+	ACALL(String operands) {
+		super(operands, instructions);
+	}
+}
+
+class LCALL extends ACALL {
+	
+	LCALL(String operands) {
+		super(operands);
+	}
+}
+
+class AJMP extends ACALL {
+	
+	AJMP(String operands) {
+		super(operands);
+	}
+}
+
+class LJMP extends ACALL {
+	
+	LJMP(String operands) {
+		super(operands);
+	}
+}
+
+class SJMP extends ACALL {
+	
+	SJMP(String operands) {
+		super(operands);
+	}
+}
+
+class JZ extends ACALL {
+	
+	JZ(String operands) {
+		super(operands);
+	}
+}
+
+class JNZ extends ACALL {
+	
+	JNZ(String operands) {
+		super(operands);
+	}
+}
+
+class RET extends Mnemonics {
+}
+
+class RETI extends Mnemonics {
+}
+
+class NOP extends Mnemonics {
+}
+
+class JMP extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^@A+DPTR$")
+	};
+	
+	JMP(String operands) {
+		super(operands, instructions);
+	}
+}
+
+class CJNE extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^(A|R[0-7]|@R[01]),(#(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$"),
+		Pattern.compile("^(A),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
+	};
+	
+	CJNE(String operands) {
+		super(operands, instructions);
+	}
+}
+
+class DJNZ extends Mnemonics {
+	
+	final static private Pattern[] instructions = {
+		Pattern.compile("^(R[0-7]|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
+	};
+	
+	DJNZ(String operands) {
+		super(operands, instructions);
 	}
 }

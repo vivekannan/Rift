@@ -64,10 +64,10 @@ class HelperClasses {
 			
 			if(line.length() > 0) {
 				
-				if(line.matches("^[A-Z][A-Z0-9]*: .*$")) {
-					String[] s = line.split(": ", 2);
-					temp.label = s[0];
-					line = s[1];
+				if(line.matches("^[A-Z][A-Z0-9]*:.*$")) {
+					tokens = line.split(": ?", 2);
+					temp.label = tokens[0];
+					line = tokens[1];
 				}
 				
 				tokens = line.split(" ", 2);
@@ -86,8 +86,15 @@ class HelperClasses {
 					}
 				}
 				
-				else if(tokens[0].equals("NOP"))
-					continue;
+				else if(tokens.length == 1) {
+					try {
+						temp.m = (Mnemonics) Class.forName(tokens[0]).newInstance();
+					}
+					
+					catch(Exception e) {
+						temp.setError("Unindentified Mnemonic: " + tokens[0]);
+					}
+				}
 				
 				else if(tokens[0].equals("END"))
 					return;
