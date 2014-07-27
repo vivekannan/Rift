@@ -1,6 +1,26 @@
 import java.util.ArrayList;
 import java.util.List;
 
+class Line {
+	
+	String rawLine;
+	String parsedLine;
+	String label;
+	int lineNumber;
+	String errorStatement;
+	Mnemonics m;
+	
+	Line(String l, int ln) {
+		this.rawLine = l;
+		this.lineNumber = ln;
+	}
+	
+	void setError(String error) {
+		
+		this.errorStatement = String.format("::%d: %s\n%s", this.lineNumber, error, this.rawLine);
+	}
+}
+
 class Boo {
 	
 	private static String fileName;
