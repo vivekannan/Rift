@@ -15,7 +15,7 @@ class Boo {
 			e = lines.get(i).errorStatement;
 			if(e != null) {
 				errors = true;
-				System.out.println(e);
+				System.out.println(fileName + e);
 			}
 		}
 		
@@ -27,9 +27,9 @@ class Boo {
 		if(args.length > 0) {
 			fileName = args[0];
 			
-			ReadFile.read(fileName, lines);
-			Parser.parse(lines);
-			Tokenizer.tokenize(fileName, lines);
+			HelperClasses.read(fileName, lines);
+			HelperClasses.parse(lines);
+			HelperClasses.tokenize(lines);
 			
 			if(!printLineErrors())
 				System.out.println("All systems nominal.");

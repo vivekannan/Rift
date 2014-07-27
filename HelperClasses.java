@@ -5,15 +5,11 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.util.List;
 
-class HelperClasses {
-}
-
 class Line {
 	
 	String rawLine;
 	String parsedLine;
 	String label;
-	String opCode;
 	int lineNumber;
 	String errorStatement;
 	Mnemonics m;
@@ -23,20 +19,19 @@ class Line {
 		this.lineNumber = ln;
 	}
 	
-	void setError(String error, String fileName) {
+	void setError(String error) {
 		
-		this.errorStatement = String.format("%s::%d: %s\n%s", fileName, this.lineNumber, error, this.rawLine);
+		this.errorStatement = String.format("::%d: %s\n%s", this.lineNumber, error, this.rawLine);
 	}
 }
 
-class ReadFile {
-	
-	private static BufferedReader assemblySource = null;
-	private static String line;
+class HelperClasses {
 	
 	static void read(String fileName, List<Line> lines) {
 		
 		int i = 0;
+		String line;
+		BufferedReader assemblySource = null;
 		
 		try {
 			assemblySource = new BufferedReader(new FileReader(fileName));
@@ -57,9 +52,6 @@ class ReadFile {
 			System.exit(0);
 		}
 	}
-}
-
-class Parser {
 	
 	static void parse(List<Line> lines) {
 		
@@ -79,11 +71,8 @@ class Parser {
 			temp.parsedLine = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",");
 		}
 	}
-}
-
-class Tokenizer {
 	
-	static void tokenize(String fileName, List<Line> lines) {
+	static void tokenize(List<Line> lines) {
 		
 		Line temp;
 		String line;
@@ -110,11 +99,11 @@ class Tokenizer {
 						temp.m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
 						
 						if(!temp.m.validate())
-							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0], fileName);
+							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
 					}
 					
 					catch(Exception e) {
-						temp.setError("Unindentified Mnemonic: " + tokens[0], fileName);
+						temp.setError("Unindentified Mnemonic: " + tokens[0]);
 					}
 				}
 				
@@ -125,7 +114,7 @@ class Tokenizer {
 					return;
 				
 				else
-					temp.setError("Unidentified statement.", fileName);
+					temp.setError("Unidentified statement.");
 			}
 		}
 	}
