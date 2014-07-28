@@ -72,35 +72,28 @@ class HelperClasses {
 				
 				tokens = line.split(" ", 2);
 				
-				if(tokens.length == 2) {
-					try {
-						
+				try {
+					if(tokens.length == 2) {
 						temp.m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
 						
 						if(!temp.m.validate())
 							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
 					}
 					
-					catch(Exception e) {
-						temp.setError("Unindentified Mnemonic: " + tokens[0]);
-					}
-				}
-				
-				else if(tokens.length == 1) {
-					try {
+					else if(tokens.length == 1) {
+						if(tokens[0].equals("END"))
+							return;
+						
 						temp.m = (Mnemonics) Class.forName(tokens[0]).newInstance();
 					}
 					
-					catch(Exception e) {
-						temp.setError("Unindentified Mnemonic: " + tokens[0]);
-					}
+					else
+						temp.setError("Unidentified statement.");
 				}
 				
-				else if(tokens[0].equals("END"))
-					return;
-				
-				else
-					temp.setError("Unidentified statement.");
+				catch(Exception e) {
+					temp.setError("Unindentified Mnemonic: " + tokens[0]);
+				}
 			}
 		}
 	}

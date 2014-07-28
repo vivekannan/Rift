@@ -322,49 +322,49 @@ class ACALL extends Mnemonics {
 		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
 	};
 	
-	ACALL(String operands) {
+	public ACALL(String operands) {
 		super(operands, instructions);
 	}
 }
 
 class LCALL extends ACALL {
 	
-	LCALL(String operands) {
+	public LCALL(String operands) {
 		super(operands);
 	}
 }
 
 class AJMP extends ACALL {
 	
-	AJMP(String operands) {
+	public AJMP(String operands) {
 		super(operands);
 	}
 }
 
 class LJMP extends ACALL {
 	
-	LJMP(String operands) {
+	public LJMP(String operands) {
 		super(operands);
 	}
 }
 
 class SJMP extends ACALL {
 	
-	SJMP(String operands) {
+	public SJMP(String operands) {
 		super(operands);
 	}
 }
 
 class JZ extends ACALL {
 	
-	JZ(String operands) {
+	public JZ(String operands) {
 		super(operands);
 	}
 }
 
 class JNZ extends ACALL {
 	
-	JNZ(String operands) {
+	public JNZ(String operands) {
 		super(operands);
 	}
 }
@@ -384,7 +384,7 @@ class JMP extends Mnemonics {
 		Pattern.compile("^@A+DPTR$")
 	};
 	
-	JMP(String operands) {
+	public JMP(String operands) {
 		super(operands, instructions);
 	}
 }
@@ -396,7 +396,7 @@ class CJNE extends Mnemonics {
 		Pattern.compile("^(A),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
 	};
 	
-	CJNE(String operands) {
+	public CJNE(String operands) {
 		super(operands, instructions);
 	}
 }
@@ -407,7 +407,7 @@ class DJNZ extends Mnemonics {
 		Pattern.compile("^(R[0-7]|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
 	};
 	
-	DJNZ(String operands) {
+	public DJNZ(String operands) {
 		super(operands, instructions);
 	}
 }
