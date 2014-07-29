@@ -1,5 +1,6 @@
 import java.lang.reflect.Constructor;
 import java.io.FileNotFoundException;
+import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileReader;
@@ -56,6 +57,7 @@ class HelperClasses {
 		Line temp;
 		String line;
 		String[] tokens;
+		Pattern label = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
 		
 		for(int i = 0; i < Boo.lines.size(); i++) {
 			
@@ -64,7 +66,7 @@ class HelperClasses {
 			
 			if(line.length() > 0) {
 				
-				if(line.matches("^[A-Z][A-Z0-9]*:.*$")) {
+				if(label.matcher(line).matches()) {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
 					line = tokens[1];
