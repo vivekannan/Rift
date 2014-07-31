@@ -18,6 +18,8 @@ class Mnemonics {
 	
 	boolean validate() {
 		
+		//System.out.println(this.getClass().getName());
+		
 		for(int i = 0; i < this.instructions.length; i++) {
 			match = this.instructions[i].matcher(this.operands);
 			
