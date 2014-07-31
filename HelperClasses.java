@@ -3,9 +3,42 @@ import java.io.FileNotFoundException;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.List;
 
 class HelperClasses {
+	
+	static HashMap<String, List<Pattern>> hexCodes = new HashMap<String, List<Pattern>>();
+	
+	static {
+		try {
+			String line;
+			String[] tokens;
+			Pattern p;
+			BufferedReader hexSource = new BufferedReader(new FileReader("hexcodes.txt"));
+			
+			while((line = hexSource.readLine()) != null) {
+				tokens = line.split(" ", 2);
+				p = Pattern.compile(tokens[1]);
+				
+				if(hexCodes.containsKey(tokens[0]))
+					hexCodes.get(tokens[0]).add(p);
+					
+				else {
+					List<Pattern> temp = new ArrayList<Pattern>();
+					temp.add(p);
+					hexCodes.put(tokens[0], temp);
+				}
+			}
+		}
+		
+		catch(Exception e) {
+			System.out.println("Can't find hex codes! Exiting...");
+			System.exit(0);
+		}
+	}
 	
 	static void read() {
 		

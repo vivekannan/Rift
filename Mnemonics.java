@@ -1,27 +1,25 @@
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.List;
 
 class Mnemonics {
 	
 	private String operands;
-	private Pattern[] instructions;
 	private Matcher match;
 	
 	Mnemonics() {
 	}
 	
-	Mnemonics(String operands, Pattern[] instructions) {
-		
+	Mnemonics(String operands) {
 		this.operands = operands;
-		this.instructions = instructions;
 	}
 	
 	boolean validate() {
 		
-		//System.out.println(this.getClass().getName());
+		List<Pattern> instructions = HelperClasses.hexCodes.get(this.getClass().getName());
 		
-		for(int i = 0; i < this.instructions.length; i++) {
-			match = this.instructions[i].matcher(this.operands);
+		for(int i = 0; i < instructions.size(); i++) {
+			match = instructions.get(i).matcher(this.operands);
 			
 			if(match.matches())
 				return true;
@@ -33,50 +31,29 @@ class Mnemonics {
 
 class MOV extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
-		Pattern.compile("^(R[0-7]|@R[01]),(A|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),(A|R[0-7]|@R[01]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
-		Pattern.compile("^(DPTR),(#(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$"),
-		Pattern.compile("^(C,(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),C)$")
-	};
-	
 	public MOV(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class MOVC extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(@A\\+(?:DPTR|PC))$")
-	};
-	
 	public MOVC(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class MOVX extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(@(?:R[01]|DPTR))$"),
-		Pattern.compile("^(@(?:R[01]|DPTR)),(A)$"),
-	};
-	
 	public MOVX(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class ADD extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$")
-	};
-	
 	public ADD(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -96,34 +73,22 @@ class SUBB extends ADD {
 
 class INC extends Mnemonics {
 	
-	private static Pattern[] instructions = {
-		Pattern.compile("^(A|R[0-7]|@R[01]|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|DPTR)$")
-	};
-	
 	public INC(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class DEC extends Mnemonics {
 	
-	private static Pattern[] instructions = {
-		Pattern.compile("^(A|R[0-7]|@R[01]|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$")
-	};
-	
 	public DEC(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class MUL extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(AB)$")
-	};
-	
 	public MUL(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -136,14 +101,8 @@ class DIV extends MUL {
 
 class ANL extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$"),
-		Pattern.compile("^(C,//?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$")
-	};
-	
 	public ANL(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -156,24 +115,15 @@ class ORL extends ANL {
 
 class XRL extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$"),
-	};
-	
 	public XRL(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class PUSH extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
-	};
-	
 	public PUSH(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -186,12 +136,8 @@ class POP extends PUSH {
 
 class DA extends Mnemonics {
 	
-	final private static Pattern[] instructions = {
-		Pattern.compile("^(A)$")
-	};
-	
 	public DA(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -232,12 +178,8 @@ class SWAP extends DA {
 
 class XCH extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^(A),(R[0-7]|[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H|@R[01])$")
-	};
-	
 	public XCH(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -250,12 +192,8 @@ class XCHD extends XCH {
 
 class CLR extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^(A|C|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H))$")
-	};
-	
 	public CLR(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -275,12 +213,8 @@ class SETB extends CLR {
 
 class JC extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^([A-Z][A-Z0-9]*)$")
-	};
-	
 	public JC(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -293,12 +227,8 @@ class JNC extends JC {
 
 class JB extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([A-Z][A-Z0-9]*)$")
-	};
-	
 	public JB(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -318,12 +248,8 @@ class JBC extends JB {
 
 class ACALL extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
-	};
-	
 	public ACALL(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
@@ -380,34 +306,21 @@ class NOP extends Mnemonics {
 
 class JMP extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^@A+DPTR$")
-	};
-	
 	public JMP(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class CJNE extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^(A|R[0-7]|@R[01]),(#(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$"),
-		Pattern.compile("^(A),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
-	};
-	
 	public CJNE(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
 
 class DJNZ extends Mnemonics {
 	
-	final static private Pattern[] instructions = {
-		Pattern.compile("^(R[0-7]|(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)),([01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)$")
-	};
-	
 	public DJNZ(String operands) {
-		super(operands, instructions);
+		super(operands);
 	}
 }
