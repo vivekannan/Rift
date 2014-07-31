@@ -27,11 +27,9 @@ class Mnemonics {
 		
 		return false;
 	}
-	
 }
 
 class MOV extends Mnemonics {
-	
 	
 	final private static Pattern[] instructions = {
 		Pattern.compile("^(A),(R[0-7]|#?(?:[01]+B|[0-9]+D?|(?:0[A-Z]|\\d)[0-9A-Z]+H)|@R[01])$"),
