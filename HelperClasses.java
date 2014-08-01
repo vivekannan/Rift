@@ -44,7 +44,7 @@ class HelperClasses {
 		
 		int i = 0;
 		String line;
-		BufferedReader assemblySource = null;
+		BufferedReader assemblySource;
 		
 		try {
 			assemblySource = new BufferedReader(new FileReader(Boo.fileName));
