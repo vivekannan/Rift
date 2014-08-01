@@ -14,9 +14,10 @@ class HelperClasses {
 	
 	static {
 		try {
+			Pattern p;
 			String line;
 			String[] tokens;
-			Pattern p;
+			List<Pattern> temp;
 			BufferedReader hexSource = new BufferedReader(new FileReader("hexcodes.txt"));
 			
 			while((line = hexSource.readLine()) != null) {
@@ -27,7 +28,7 @@ class HelperClasses {
 					hexCodes.get(tokens[0]).add(p);
 					
 				else {
-					List<Pattern> temp = new ArrayList<Pattern>();
+					temp = new ArrayList<Pattern>();
 					temp.add(p);
 					hexCodes.put(tokens[0], temp);
 				}
