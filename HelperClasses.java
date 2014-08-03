@@ -5,38 +5,39 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.List;
 
 class HelperClasses {
 	
-	static HashMap<String, List<Pattern>> hexCodes = new HashMap<String, List<Pattern>>();
-	
-	static {
+	static void getOpcodes() {
+		
+		Object[] op;
+		String line;
+		String[] tokens;
+		int lineCount = 0;
+		ArrayList<Object[]> temp;
+		BufferedReader hexSource;
+		
 		try {
-			Pattern p;
-			String line;
-			String[] tokens;
-			List<Pattern> temp;
-			BufferedReader hexSource = new BufferedReader(new FileReader("hexcodes.txt"));
+			hexSource = new BufferedReader(new FileReader("hexcodes.txt"));
 			
 			while((line = hexSource.readLine()) != null) {
-				tokens = line.split(" ", 2);
-				p = Pattern.compile(tokens[1]);
 				
-				if(hexCodes.containsKey(tokens[0]))
-					hexCodes.get(tokens[0]).add(p);
-					
+				tokens = line.split(" ", 2);
+				op = new Object[] { Pattern.compile(tokens[1]), Integer.toHexString(lineCount++).toUpperCase() };
+				
+				if(Boo.hexCodes.containsKey(tokens[0]))
+					Boo.hexCodes.get(tokens[0]).add(op);
+				
 				else {
-					temp = new ArrayList<Pattern>();
-					temp.add(p);
-					hexCodes.put(tokens[0], temp);
+					temp = new ArrayList<Object[]>();
+					temp.add(op);
+					Boo.hexCodes.put(tokens[0], temp);
 				}
 			}
 		}
 		
 		catch(Exception e) {
-			System.out.println("Can't find hex codes! Exiting...");
+			System.out.println("Can't find hex codes! Exiting..." + e);
 			System.exit(0);
 		}
 	}
@@ -99,7 +100,6 @@ class HelperClasses {
 			line = temp.parsedLine;
 			
 			if(line.length() > 0) {
-				
 				if(label.matcher(line).matches()) {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
@@ -111,9 +111,6 @@ class HelperClasses {
 				try {
 					if(tokens.length == 2) {
 						temp.m = (Mnemonics) Class.forName(tokens[0]).getConstructor(String.class).newInstance(tokens[1]);
-						
-						if(!temp.m.validate())
-							temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
 					}
 					
 					else if(tokens.length == 1) {
@@ -123,8 +120,13 @@ class HelperClasses {
 						temp.m = (Mnemonics) Class.forName(tokens[0]).newInstance();
 					}
 					
-					else
+					else {
 						temp.setError("Unidentified statement.");
+						continue;
+					}
+					
+					if(!temp.m.validate())
+						temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
 				}
 				
 				catch(Exception e) {

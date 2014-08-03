@@ -4,25 +4,31 @@ import java.util.List;
 
 class Mnemonics {
 	
-	private String operands;
-	private Matcher match;
+	Matcher match;
+	String opcode;
+	String operands = "";
 	
 	Mnemonics() {
 	}
 	
 	Mnemonics(String operands) {
+		
 		this.operands = operands;
 	}
 	
 	boolean validate() {
 		
-		List<Pattern> instructions = HelperClasses.hexCodes.get(this.getClass().getName());
+		List<Object[]> op = Boo.hexCodes.get(this.getClass().getName());
 		
-		for(int i = 0; i < instructions.size(); i++) {
-			match = instructions.get(i).matcher(this.operands);
+		for(int i = 0; i < op.size(); i++) {
 			
-			if(match.matches())
+			match = ((Pattern) op.get(i)[0]).matcher(this.operands);
+			
+			if(match.matches()) {
+				this.opcode = (String) op.get(i)[1];
+				
 				return true;
+			}
 		}
 		
 		return false;
