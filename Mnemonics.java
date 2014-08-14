@@ -38,7 +38,7 @@ class Mnemonics {
 			
 			if(match.matches()) {
 				this.opcode = (String) o[1];
-				this.size = 1 + match.groupCount() + (this.opcode.equals("03") || this.opcode.equals("12") || this.opcode.equals("90") ? 1 : 0);
+				this.size = 1 + match.groupCount() + (this.opcode.equals("02") || this.opcode.equals("12") || this.opcode.equals("90") ? 1 : 0);
 				
 				for(int j = 1; j <= match.groupCount(); j++) {
 					if(label.matcher(match.group(j)).matches())

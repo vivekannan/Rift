@@ -13,7 +13,7 @@ class HelperFunctions {
 		
 		for(Line temp : Boo.lines) {
 			if(temp.parsedLine != null && temp.label != null && temp.label.equals(label)) {
-				if(line.m.getClass().getName().endsWith("CALL"))
+				if(line.m.getClass().getName().endsWith("CALL") || line.m.getClass().getName().equals("LJMP"))
 					return temp.address;
 				
 				String s = Integer.toHexString(Integer.parseInt(temp.address, 16) - Integer.parseInt(line.address, 16) - line.m.size).toUpperCase();
@@ -63,15 +63,15 @@ class HelperFunctions {
 	static void read() {
 		
 		String line;
-		BufferedReader assemblySource;
+		BufferedReader asmSource;
 		
 		try {
-			assemblySource = new BufferedReader(new FileReader(Boo.fileName));
+			asmSource = new BufferedReader(new FileReader(Boo.fileName));
 			
-			for(int i = 1; (line = assemblySource.readLine()) != null; i++)
+			for(int i = 1; (line = asmSource.readLine()) != null; i++)
 				Boo.lines.add(new Line(line, i));
 			
-			assemblySource.close();
+			asmSource.close();
 		}
 		
 		catch(FileNotFoundException e) {
