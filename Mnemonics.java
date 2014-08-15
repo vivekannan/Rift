@@ -42,7 +42,7 @@ class Mnemonics {
 				
 				for(int j = 1; j <= match.groupCount(); j++) {
 					if(label.matcher(match.group(j)).matches())
-						this.opcode += "[" + match.group(j);
+						this.opcode += ":" + match.group(j);
 					
 					else
 						this.opcode += hexify(match.group(j));

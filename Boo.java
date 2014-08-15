@@ -44,6 +44,9 @@ class Boo {
 				HelperFunctions.deLabelize();
 			}
 			
+			else
+				return;
+			
 			if(!HelperFunctions.printErrors())
 				HelperFunctions.writeToFile();
 		}

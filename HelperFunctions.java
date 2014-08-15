@@ -60,6 +60,15 @@ class HelperFunctions {
 		}
 	}
 	
+	/**
+	*	Reads lines using Boo.fileName as filename and stores the lines in Boo.lines.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws FileNotFoundException If given file is not found.
+	*	@throws IOException If file cannot be opened.
+	*/
+	
 	static void read() {
 		
 		String line;
@@ -84,6 +93,15 @@ class HelperFunctions {
 			System.exit(0);
 		}
 	}
+	
+	/**
+	*	Parses the lines read by read(). Removes comments and excess whitespaces.
+	*	Parsing is terminated when "END" is encountered.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws None
+	*/
 	
 	static void parse() {
 		
@@ -123,6 +141,11 @@ class HelperFunctions {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
 					line = tokens[1];
+				}
+				
+				if(line.equals("")) {
+					temp.setError("Hanging label encountered.");
+					continue;
 				}
 				
 				tokens = line.split(" ", 2);
@@ -182,15 +205,12 @@ class HelperFunctions {
 	
 	static void deLabelize() {
 		
-		int index;
 		String[] tokens;
 		
 		for(Line temp : Boo.lines) {
 			if(temp.m != null) {
-				index = temp.m.opcode.indexOf("[");
-				
-				if(index != -1) {
-					tokens = temp.m.opcode.split("\\[");
+				if(temp.m.opcode.indexOf(":") != -1) {
+					tokens = temp.m.opcode.split(":");
 					
 					try {
 						temp.m.opcode = tokens[0] + HelperFunctions.calcAddr(tokens[1], temp);
@@ -204,6 +224,15 @@ class HelperFunctions {
 		}
 	}
 	
+	/**
+	*	Creates a file with basename of Boo.fileName with extension ".lst".
+	*	The lst content is then written to the file. If an exception occurs, falls back to stdout.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws Exception If error in file creation.
+	*/
+	
 	static void writeToFile() {
 		
 		try {
@@ -211,7 +240,7 @@ class HelperFunctions {
 			PrintWriter lstFile = new PrintWriter(Boo.fileName.substring(0, dotIndex > 0 ? dotIndex : Boo.fileName.length()) + ".lst", "UTF-8");
 			
 			for(Line temp : Boo.lines) {
-				if(temp.parsedLine == null)
+				if(temp.parsedLine == null) //Write to file until "END" directive.
 					return;
 				
 				lstFile.println(String.format("%-4d%-6s%-8s%s", temp.lineNumber, temp.address, temp.m != null ? temp.m.opcode : "", temp.rawLine));
@@ -223,13 +252,25 @@ class HelperFunctions {
 		
 		catch(Exception e) {
 			System.out.println("Cannot create lst file. Falling back to stdout.");
+			printToStdout();
+		}
+	}
+	
+	/**
+	*	Prints the lst file to stdout.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws None
+	*/
+	
+	static void printToStdout() {
+		
+		for(Line temp : Boo.lines) {
+			if(temp.parsedLine == null) //Write to stdout until "END" directive.
+				return;
 			
-			for(Line temp : Boo.lines) {
-				if(temp.parsedLine == null)
-					return;
-				
-				System.out.println(String.format("%-4d%-6s%-8s%s", temp.lineNumber, temp.address, temp.m != null ? temp.m.opcode : "", temp.rawLine));
-			}
+			System.out.println(String.format("%-4d%-6s%-8s%s", temp.lineNumber, temp.address, temp.m != null ? temp.m.opcode : "", temp.rawLine));
 		}
 	}
 }
