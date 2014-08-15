@@ -9,6 +9,16 @@ import java.lang.reflect.Constructor;
 
 class HelperFunctions {
 	
+	/**
+	*	Calculates the address for labels. Depending upon the Mnemonics,
+	*	the address maybe relative or absolute.
+	*	
+	*	@param String label The label given as a operand for which the address must be calculate.
+	*	@param Line line The line object which has the label as an operand.
+	*	@return A String object representing the address.
+	*	@throws Exception When the given label cannot be found in the asm source.
+	*/
+	//TODO: Support AJMP and ACALL Mnemonics. Reduce paramenter list.
 	static String calcAddr(String label, Line line) throws Exception {
 		
 		for(Line temp : Boo.lines) {
@@ -68,7 +78,7 @@ class HelperFunctions {
 	*	@throws FileNotFoundException If given file is not found.
 	*	@throws IOException If file cannot be opened.
 	*/
-	
+	//TODO: None.
 	static void read() {
 		
 		String line;
@@ -102,7 +112,7 @@ class HelperFunctions {
 	*	@return void
 	*	@throws None
 	*/
-	
+	//TODO: Support all the other directives (ORG, DB).
 	static void parse() {
 		
 		String line;
@@ -185,12 +195,13 @@ class HelperFunctions {
 		return b;
 	}
 	
+	//TODO: Once ORG directive is supported, "start" value should jump correspondingly.
 	static void allocROMAddr() {
 		
 		int start = 0x0000;
 		
 		for(Line temp : Boo.lines) {
-			if(temp.parsedLine == null)
+			if(temp.parsedLine == null) //Allocate address for instructions until "END" directive.
 				return;
 			
 			if(temp.m != null) {
@@ -199,7 +210,7 @@ class HelperFunctions {
 			}
 			
 			else
-				temp.address = "";
+				temp.address = ""; //Mnemonic devoid statements do not get any address.
 		}
 	}
 	
@@ -232,7 +243,7 @@ class HelperFunctions {
 	*	@return void
 	*	@throws Exception If error in file creation.
 	*/
-	
+	//TODO: None.
 	static void writeToFile() {
 		
 		try {
@@ -263,7 +274,7 @@ class HelperFunctions {
 	*	@return void
 	*	@throws None
 	*/
-	
+	//TODO: None.
 	static void printToStdout() {
 		
 		for(Line temp : Boo.lines) {
