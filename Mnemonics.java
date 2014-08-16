@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 class Mnemonics {
 	
-	int size = 0;
+	int size;
 	String opcode;
-	static Pattern label = Pattern.compile("[A-Z][A-Z0-9_]*");
+	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9_]*");
 	
 	String hexify(String s) throws Exception {
 		
@@ -41,7 +41,7 @@ class Mnemonics {
 				this.size = 1 + match.groupCount() + (this.opcode.equals("02") || this.opcode.equals("12") || this.opcode.equals("90") ? 1 : 0);
 				
 				for(int j = 1; j <= match.groupCount(); j++) {
-					if(label.matcher(match.group(j)).matches())
+					if(LABEL.matcher(match.group(j)).matches())
 						this.opcode += ":" + match.group(j);
 					
 					else

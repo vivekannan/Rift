@@ -9,6 +9,8 @@ import java.lang.reflect.Constructor;
 
 class HelperFunctions {
 	
+	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H");
+	
 	/**
 	*	Calculates the address for labels. Depending upon the Mnemonics,
 	*	the address maybe relative or absolute.
@@ -112,7 +114,7 @@ class HelperFunctions {
 	*	@return void
 	*	@throws None
 	*/
-	//TODO: Support all the other directives (ORG, DB).
+	//TODO: Support all the other directives (DB, EQU, BIT).
 	static void parse() {
 		
 		String line;
@@ -125,12 +127,18 @@ class HelperFunctions {
 			if(commentIndex != -1)
 				line = line.substring(0, commentIndex);
 			
-			line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",");
+			line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+			
+			if(ORGDIRECTIVE.matcher(line).matches()) {
+				String[] tokens = line.split(" ");
+				temp.org = tokens[1].substring(0, tokens[1].length() - 1);
+				line = "";
+			}
 			
 			if(line.equals("END"))
 				return;
 			
-			temp.parsedLine = line.toUpperCase();
+			temp.parsedLine = line;
 		}
 	}
 	
@@ -138,7 +146,7 @@ class HelperFunctions {
 		
 		String line;
 		String[] tokens;
-		Pattern label = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
+		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.parsedLine;
@@ -147,7 +155,7 @@ class HelperFunctions {
 				return;
 			
 			if(line.length() > 0) {
-				if(label.matcher(line).matches()) {
+				if(LABEL.matcher(line).matches()) {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
 					line = tokens[1];
@@ -203,6 +211,9 @@ class HelperFunctions {
 		for(Line temp : Boo.lines) {
 			if(temp.parsedLine == null) //Allocate address for instructions until "END" directive.
 				return;
+			
+			if(temp.org != null)
+				start = Integer.parseInt(temp.org, 16);
 			
 			if(temp.m != null) {
 				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");

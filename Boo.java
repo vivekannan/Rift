@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 class Line {
 	
+	String org;
 	Mnemonics m;
 	String label;
 	int lineNumber;
