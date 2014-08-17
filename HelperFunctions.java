@@ -9,26 +9,34 @@ import java.lang.reflect.Constructor;
 
 class HelperFunctions {
 	
-	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H");
+	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H?");
 	
 	/**
-	*	Calculates the address for labels. Depending upon the Mnemonics,
-	*	the address maybe relative or absolute.
+	*	Calculates the address for labels. Depending upon the Mnemonics, the address maybe relative or absolute.
 	*	
 	*	@param String label The label given as a operand for which the address must be calculate.
 	*	@param Line line The line object which has the label as an operand.
 	*	@return A String object representing the address.
 	*	@throws Exception When the given label cannot be found in the asm source.
+	*	@throws Exception When jump range for SJMP exceeds limit.
 	*/
 	//TODO: Support AJMP and ACALL Mnemonics. Reduce paramenter list.
 	static String calcAddr(String label, Line line) throws Exception {
 		
 		for(Line temp : Boo.lines) {
-			if(temp.parsedLine != null && temp.label != null && temp.label.equals(label)) {
+			if(temp.parsedLine == null)
+				break;
+			
+			if(temp.label != null && temp.label.equals(label)) {
 				if(line.m.getClass().getName().endsWith("CALL") || line.m.getClass().getName().equals("LJMP"))
 					return temp.address;
 				
-				String s = Integer.toHexString(Integer.parseInt(temp.address, 16) - Integer.parseInt(line.address, 16) - line.m.size).toUpperCase();
+				int jump = Integer.parseInt(temp.address, 16) - Integer.parseInt(line.address, 16) - line.m.size;
+				
+				if(line.m.getClass().getName().equals("SJMP") && (jump < -128 || jump > 127))
+					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
+				
+				String s = Integer.toHexString(jump).toUpperCase();
 				
 				return ("00" + s).substring(s.length());
 			}
@@ -117,6 +125,7 @@ class HelperFunctions {
 	//TODO: Support all the other directives (DB, EQU, BIT).
 	static void parse() {
 		
+		String[] tokens;
 		String line;
 		int commentIndex;
 		
@@ -130,8 +139,8 @@ class HelperFunctions {
 			line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 			
 			if(ORGDIRECTIVE.matcher(line).matches()) {
-				String[] tokens = line.split(" ");
-				temp.org = tokens[1].substring(0, tokens[1].length() - 1);
+				tokens = line.split(" ");
+				temp.org = tokens[1].replaceAll("H", "");
 				line = "";
 			}
 			
@@ -188,22 +197,19 @@ class HelperFunctions {
 	
 	static boolean printErrors() {
 		
-		String e;
 		boolean b = false;
 		
 		for(Line temp : Boo.lines) {
-			e = temp.errorStatement;
-			
-			if(e != null) {
+			if(temp.errorStatement != null) {
 				b = true;
-				System.out.println(Boo.fileName + e);
+				System.out.println(Boo.fileName + temp.errorStatement);
 			}
 		}
 		
 		return b;
 	}
 	
-	//TODO: Once ORG directive is supported, "start" value should jump correspondingly.
+	//TODO: None.
 	static void allocROMAddr() {
 		
 		int start = 0x0000;
