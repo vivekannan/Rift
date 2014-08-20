@@ -35,21 +35,21 @@ class Boo {
 		if(args.length > 0) {
 			fileName = args[0];
 			
-			HelperFunctions.getOpcodes();
-			HelperFunctions.read();
-			HelperFunctions.parse();
-			HelperFunctions.tokenize();
+			HelperMethods.getOpcodes();
+			HelperMethods.read();
+			HelperMethods.parse();
+			HelperMethods.tokenize();
 			
-			if(!HelperFunctions.printErrors()) {
-				HelperFunctions.allocROMAddr();
-				HelperFunctions.deLabelize();
+			if(!HelperMethods.printErrors()) {
+				HelperMethods.allocROMAddr();
+				HelperMethods.deLabelize();
 			}
 			
 			else
 				return;
 			
-			if(!HelperFunctions.printErrors())
-				HelperFunctions.writeToFile();
+			if(!HelperMethods.printErrors())
+				HelperMethods.writeToFile();
 		}
 		
 		else

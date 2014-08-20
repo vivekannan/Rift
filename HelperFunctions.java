@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 
-class HelperFunctions {
+class HelperMethods {
 	
 	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H?");
 	
@@ -241,7 +241,7 @@ class HelperFunctions {
 					tokens = temp.m.opcode.split(":");
 					
 					try {
-						temp.m.opcode = tokens[0] + HelperFunctions.calcAddr(tokens[1], temp);
+						temp.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], temp);
 					}
 					
 					catch(Exception e) {
