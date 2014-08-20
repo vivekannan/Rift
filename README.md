@@ -22,5 +22,3 @@ Boo is an Atmel 8051 microcontroller interpreter written in Java. Boo is written
 Check for jump range in SJMP and such and set error correspondingly.
 Implement AJMP and ACALL Mnemonics properly.
 Implement support for directives such EQU, DB, BIT.
-Legalise hanging labels?
-
