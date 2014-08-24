@@ -20,7 +20,7 @@ class HelperMethods {
 	*	@throws Exception When the given label cannot be found in the asm source.
 	*	@throws Exception When jump range for SJMP exceeds limit.
 	*/
-	//TODO: Support AJMP and ACALL Mnemonics. Reduce paramenter list.
+	//TODO: Support AJMP and ACALL Mnemonics.
 	static String calcAddr(String label, Line line) throws Exception {
 		
 		for(Line temp : Boo.lines) {
@@ -28,14 +28,23 @@ class HelperMethods {
 				break;
 			
 			if(temp.label != null && temp.label.equals(label)) {
-				if(line.m.getClass().getName().endsWith("CALL") || line.m.getClass().getName().equals("LJMP"))
+				String className = line.m.getClass().getName();
+
+				if(className.equals("LCALL") || className.equals("LJMP"))
 					return temp.address;
 				
-				int jump = Integer.parseInt(temp.address, 16) - Integer.parseInt(line.address, 16) - line.m.size;
+				int lineAddress = Integer.parseInt(line.address, 16) + line.m.size;
+				int labelAddress = Integer.parseInt(temp.address, 16);
+				int jump = labelAddress - lineAddress;
 				
-				if(line.m.getClass().getName().equals("SJMP") && (jump < -128 || jump > 127))
+				if(className.equals("SJMP") && (jump < -128 || jump > 127))
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
+				else if(className.equals("AJMP")) {
+					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
+						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
+				}
+
 				String s = Integer.toHexString(jump).toUpperCase();
 				
 				return ("00" + s).substring(s.length());
@@ -168,6 +177,11 @@ class HelperMethods {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
 					line = tokens[1];
+
+					if(Boo.opcodes.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END")) {
+						temp.setError(String.format("Illegal label name, '%s'.", temp.label));
+						continue;
+					}
 				}
 				
 				if(line.equals("")) {
@@ -195,6 +209,14 @@ class HelperMethods {
 		}
 	}
 	
+	/**
+	*	Prints errors that were set by other methods. Returns true if errors are present.
+	*
+	*	@params None
+	*	@return boolean
+	*	@throws None
+	*/
+	//TODO: None.
 	static boolean printErrors() {
 		
 		boolean b = false;
@@ -209,6 +231,13 @@ class HelperMethods {
 		return b;
 	}
 	
+	/**
+	*	Allocates address to statements with proper instruction.
+	*
+	*	@params None
+	*	@return void
+	*	@throws None
+	*/
 	//TODO: None.
 	static void allocROMAddr() {
 		
