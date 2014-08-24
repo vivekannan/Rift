@@ -2,3 +2,4 @@
 *.asm
 *.lst
 *.class
+*.sublime-*
