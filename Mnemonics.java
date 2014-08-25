@@ -9,7 +9,7 @@ class Mnemonics {
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9_]*");
 	
 	String hexify(String s) throws Exception {
-		
+
 		s = s.replaceAll("#", "");
 		
 		if(s.charAt(s.length() - 1) == 'H')
@@ -30,9 +30,10 @@ class Mnemonics {
 	
 	boolean validate(String operands) throws Exception {
 		
-		List<Object[]> op = Boo.opcodes.get(this.getClass().getName());
+		String operand;
 		Matcher match;
-		
+		List<Object[]> op = Boo.opcodes.get(this.getClass().getName());
+
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
 			
@@ -40,12 +41,17 @@ class Mnemonics {
 				this.opcode = (String) o[1];
 				this.size = 1 + match.groupCount() + (this.opcode.equals("02") || this.opcode.equals("12") || this.opcode.equals("90") ? 1 : 0);
 				
-				for(int j = 1; j <= match.groupCount(); j++) {
-					if(LABEL.matcher(match.group(j)).matches())
-						this.opcode += ":" + match.group(j);
+				for(int i = 1; i <= match.groupCount(); i++) {
+					operand = match.group(i);
+					
+					if(Boo.symbols.containsKey(operand))
+						this.opcode += Boo.symbols.get(operand);
+
+					else if(LABEL.matcher(operand).matches())
+						this.opcode += ":" + operand;
 					
 					else
-						this.opcode += hexify(match.group(j));
+						this.opcode += hexify(operand);
 				}
 				
 				return true;

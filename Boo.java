@@ -28,6 +28,7 @@ class Boo {
 	
 	static String fileName;
 	static ArrayList<Line> lines = new ArrayList<Line>();
+	static HashMap<String, String> symbols = new HashMap<String, String>();
 	static HashMap<String, ArrayList<Object[]>> opcodes = new HashMap<String, ArrayList<Object[]>>();
 	
 	public static void main(String args[]) {
@@ -36,6 +37,7 @@ class Boo {
 			fileName = args[0];
 			
 			HelperMethods.getOpcodes();
+			HelperMethods.getSymbols();
 			HelperMethods.read();
 			HelperMethods.parse();
 			HelperMethods.tokenize();

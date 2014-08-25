@@ -11,49 +11,6 @@ class HelperMethods {
 	
 	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H?");
 	
-	/**
-	*	Calculates the address for labels. Depending upon the Mnemonics, the address maybe relative or absolute.
-	*	
-	*	@param String label The label given as a operand for which the address must be calculate.
-	*	@param Line line The line object which has the label as an operand.
-	*	@return A String object representing the address.
-	*	@throws Exception When the given label cannot be found in the asm source.
-	*	@throws Exception When jump range for SJMP exceeds limit.
-	*/
-	//TODO: Support AJMP and ACALL Mnemonics.
-	static String calcAddr(String label, Line line) throws Exception {
-		
-		for(Line temp : Boo.lines) {
-			if(temp.parsedLine == null)
-				break;
-			
-			if(temp.label != null && temp.label.equals(label)) {
-				String className = line.m.getClass().getName();
-
-				if(className.equals("LCALL") || className.equals("LJMP"))
-					return temp.address;
-				
-				int lineAddress = Integer.parseInt(line.address, 16) + line.m.size;
-				int labelAddress = Integer.parseInt(temp.address, 16);
-				int jump = labelAddress - lineAddress;
-				
-				if(className.equals("SJMP") && (jump < -128 || jump > 127))
-					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
-				
-				else if(className.equals("AJMP")) {
-					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
-						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
-				}
-
-				String s = Integer.toHexString(jump).toUpperCase();
-				
-				return ("00" + s).substring(s.length());
-			}
-		}
-		
-		throw new Exception("Cannot find label: " + label);
-	}
-	
 	static void getOpcodes() {
 		
 		Object[] op;
@@ -81,6 +38,8 @@ class HelperMethods {
 					Boo.opcodes.put(tokens[0], temp);
 				}
 			}
+
+			opSource.close();
 		}
 		
 		catch(Exception e) {
@@ -89,6 +48,29 @@ class HelperMethods {
 		}
 	}
 	
+	static void getSymbols() {
+
+		String line;
+		String[] tokens;
+		BufferedReader symbolSource;
+
+		try {
+			symbolSource = new BufferedReader(new FileReader("symbols.txt"));
+
+			while((line = symbolSource.readLine()) != null) {
+				tokens = line.split(" ");
+				Boo.symbols.put(tokens[0], tokens[1]);
+			}
+
+			symbolSource.close();
+		}
+
+		catch(Exception e) {
+			System.out.println("Can't find symbols! Exiting...");
+			System.exit(0);
+		}
+	}
+
 	/**
 	*	Reads lines using Boo.fileName as filename and stores the lines in Boo.lines.
 	*	
@@ -153,10 +135,10 @@ class HelperMethods {
 				line = "";
 			}
 			
+			temp.parsedLine = line;
+
 			if(line.equals("END"))
 				return;
-			
-			temp.parsedLine = line;
 		}
 	}
 	
@@ -169,7 +151,7 @@ class HelperMethods {
 		for(Line temp : Boo.lines) {
 			line = temp.parsedLine;
 			
-			if(line == null)
+			if(line.equals("END"))
 				return;
 			
 			if(line.length() > 0) {
@@ -178,7 +160,7 @@ class HelperMethods {
 					temp.label = tokens[0];
 					line = tokens[1];
 
-					if(Boo.opcodes.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END")) {
+					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END")) {
 						temp.setError("Illegal label name.");
 						continue;
 					}
@@ -265,6 +247,9 @@ class HelperMethods {
 		String[] tokens;
 		
 		for(Line temp : Boo.lines) {
+			if(temp.parsedLine.equals("END"))
+				return;
+
 			if(temp.m != null) {
 				if(temp.m.opcode.indexOf(":") != -1) {
 					tokens = temp.m.opcode.split(":");
@@ -281,6 +266,49 @@ class HelperMethods {
 		}
 	}
 	
+	/**
+	*	Calculates the address for labels. Depending upon the Mnemonics, the address maybe relative or absolute.
+	*	
+	*	@param String label The label given as a operand for which the address must be calculate.
+	*	@param Line line The line object which has the label as an operand.
+	*	@return A String object representing the address.
+	*	@throws Exception When the given label cannot be found in the asm source.
+	*	@throws Exception When jump range for SJMP exceeds limit.
+	*/
+	//TODO: Support AJMP and ACALL Mnemonics.
+	static String calcAddr(String label, Line line) throws Exception {
+		
+		for(Line temp : Boo.lines) {
+			if(temp.parsedLine.equals("END"))
+				break;
+			
+			if(temp.label != null && temp.label.equals(label)) {
+				String className = line.m.getClass().getName();
+
+				if(className.equals("LCALL") || className.equals("LJMP"))
+					return temp.address;
+				
+				int lineAddress = Integer.parseInt(line.address, 16) + line.m.size;
+				int labelAddress = Integer.parseInt(temp.address, 16);
+				int jump = labelAddress - lineAddress;
+				
+				if(className.equals("SJMP") && (jump < -128 || jump > 127))
+					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
+				
+				else if(className.equals("AJMP")) {
+					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
+						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
+				}
+
+				String s = Integer.toHexString(jump).toUpperCase();
+				
+				return ("00" + s).substring(s.length());
+			}
+		}
+		
+		throw new Exception("Cannot find label: " + label);
+	}
+
 	/**
 	*	Creates a file with basename of Boo.fileName with extension ".lst".
 	*	The lst content is then written to the file. If an exception occurs, falls back to stdout.
