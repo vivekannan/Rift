@@ -19,6 +19,7 @@ Boo is an Atmel 8051 microcontroller interpreter written in Java. Boo is written
 * Supports multiple CLK frequencies as per the original Intel 8051.
 
 ##TODO
-Check for jump range in SJMP and such and set error correspondingly.
-Implement AJMP and ACALL Mnemonics properly.
+Implement JMP, AJMP and ACALL Mnemonics properly.
 Implement support for directives such EQU, DB, BIT.
+Implement support for signed arithmetic.
+Implement support for "Symbols" such as PSW, DP[HL] and bit level symbols line A.0, P1.4 etc.

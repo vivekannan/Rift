@@ -179,7 +179,7 @@ class HelperMethods {
 					line = tokens[1];
 
 					if(Boo.opcodes.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END")) {
-						temp.setError(String.format("Illegal label name, '%s'.", temp.label));
+						temp.setError("Illegal label name.");
 						continue;
 					}
 				}
