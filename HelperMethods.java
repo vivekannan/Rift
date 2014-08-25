@@ -113,7 +113,7 @@ class HelperMethods {
 	*	@return void
 	*	@throws None
 	*/
-	//TODO: Support all the other directives (DB, EQU, BIT).
+	//TODO: Support all the other directives (DB, EQU, BIT). Have seperate hashmap for directives.
 	static void parse() {
 		
 		String[] tokens;
@@ -142,6 +142,7 @@ class HelperMethods {
 		}
 	}
 	
+	//TODO: Beautify.
 	static void tokenize() {
 		
 		String line;
@@ -275,7 +276,7 @@ class HelperMethods {
 	*	@throws Exception When the given label cannot be found in the asm source.
 	*	@throws Exception When jump range for SJMP exceeds limit.
 	*/
-	//TODO: Support AJMP and ACALL Mnemonics.
+	//TODO: Support AJMP and ACALL Mnemonics. Beautify.
 	static String calcAddr(String label, Line line) throws Exception {
 		
 		for(Line temp : Boo.lines) {
@@ -295,6 +296,7 @@ class HelperMethods {
 				if(className.equals("SJMP") && (jump < -128 || jump > 127))
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
+				//Not sure about jump rage of AJMP.
 				else if(className.equals("AJMP")) {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
 						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
