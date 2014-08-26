@@ -6,7 +6,7 @@ class Mnemonics {
 	
 	int size;
 	String opcode;
-	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9_]*");
+	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
 	String hexify(String s) throws Exception {
 

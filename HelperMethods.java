@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 
 class HelperMethods {
 	
-	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-Z]|\\d)[0-9A-Z]{0,3}H?");
+	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
 	
 	static void getOpcodes() {
 		
@@ -285,7 +285,7 @@ class HelperMethods {
 			
 			if(temp.label != null && temp.label.equals(label)) {
 				String className = line.m.getClass().getName();
-
+				
 				if(className.equals("LCALL") || className.equals("LJMP"))
 					return temp.address;
 				
