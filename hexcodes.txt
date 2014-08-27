@@ -192,7 +192,7 @@ CJNE R6,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H)),([A-Z][A-Z0-9]*)
 CJNE R7,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H)),([A-Z][A-Z0-9]*)
 PUSH ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 AJMP ([A-Z][A-Z0-9]*)
-CLR ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP\.[0-5]|IE\.[0-57])
+CLR ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]|T[RF][01])
 CLR C
 SWAP A
 XCH A,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
