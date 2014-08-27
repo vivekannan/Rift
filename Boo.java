@@ -10,7 +10,7 @@ class Line {
 	String address;
 	String rawLine;
 	String parsedLine;
-	String errorStatement;
+	ArrayList<String> errorStatements = new ArrayList<String>();
 	
 	Line(String l, int ln) {
 		
@@ -20,7 +20,7 @@ class Line {
 	
 	void setError(String error) {
 		
-		this.errorStatement = String.format("::%d: %s\n%s", this.lineNumber, error, this.rawLine);
+		this.errorStatements.add(String.format("::%d: %s\n%s", this.lineNumber, error, this.rawLine));
 	}
 }
 

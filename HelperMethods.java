@@ -161,10 +161,8 @@ class HelperMethods {
 					temp.label = tokens[0];
 					line = tokens[1];
 
-					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END")) {
+					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END"))
 						temp.setError("Illegal label name.");
-						continue;
-					}
 				}
 				
 				if(line.equals("")) {
@@ -203,11 +201,13 @@ class HelperMethods {
 	static boolean printErrors() {
 		
 		boolean b = false;
-		
+		int errors;
+
 		for(Line temp : Boo.lines) {
-			if(temp.errorStatement != null) {
+			if(!temp.errorStatements.isEmpty()) {
 				b = true;
-				System.out.println(Boo.fileName + temp.errorStatement);
+				for(String error : temp.errorStatements)
+					System.out.println(Boo.fileName + error);
 			}
 		}
 		
@@ -296,7 +296,7 @@ class HelperMethods {
 				if(className.equals("SJMP") && (jump < -128 || jump > 127))
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
-				//Not sure about jump rage of AJMP.
+				//Not sure about jump range of AJMP.
 				else if(className.equals("AJMP")) {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
 						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));

@@ -46,7 +46,7 @@ class Mnemonics {
 					
 					if(Boo.symbols.containsKey(operand))
 						this.opcode += Boo.symbols.get(operand);
-
+					
 					else if(LABEL.matcher(operand).matches())
 						this.opcode += ":" + operand;
 					
