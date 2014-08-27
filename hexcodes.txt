@@ -14,7 +14,7 @@ INC R4
 INC R5
 INC R6
 INC R7
-JBC ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]),([A-Z][A-Z0-9]*)
+JBC ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01]),([A-Z][A-Z0-9]*)
 ACALL ([A-Z][A-Z0-9]*)
 LCALL ([A-Z][A-Z0-9]*)
 RRC A
@@ -30,7 +30,7 @@ DEC R4
 DEC R5
 DEC R6
 DEC R7
-JB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]),([A-Z][A-Z0-9]*)
+JB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01]),([A-Z][A-Z0-9]*)
 AJMP ([A-Z][A-Z0-9]*)
 RET 
 RL A
@@ -46,7 +46,7 @@ ADD A,R4
 ADD A,R5
 ADD A,R6
 ADD A,R7
-JNB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]),([A-Z][A-Z0-9]*)
+JNB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01]),([A-Z][A-Z0-9]*)
 ACALL ([A-Z][A-Z0-9]*)
 RETI 
 RLC A
@@ -112,7 +112,7 @@ XRL A,R6
 XRL A,R7
 JNZ ([A-Z][A-Z0-9]*)
 ACALL ([A-Z][A-Z0-9]*)
-ORL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+ORL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01])
 JMP @A+DPTR
 MOV A,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
@@ -128,7 +128,7 @@ MOV R6,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 MOV R7,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 SJMP ([A-Z][A-Z0-9]*)
 AJMP ([A-Z][A-Z0-9]*)
-ANL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+ANL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01])
 MOVC A,@A+DPTR
 DIV AB
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
@@ -144,7 +144,7 @@ MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),R7
 MOV DPTR,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 ACALL ([A-Z][A-Z0-9]*)
-MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]),C
+MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01]),C
 MOVC A,@A+DPTR
 SUBB A,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 SUBB A,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
@@ -160,7 +160,7 @@ SUBB A,R6
 SUBB A,R7
 ORL C,(/(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 AJMP ([A-Z][A-Z0-9]*)
-MOV C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+MOV C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01])
 INC DPTR
 MUL AB
 *RESERVED* 
@@ -176,7 +176,7 @@ MOV R6,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCO
 MOV R7,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 ANL C,(/(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 ACALL ([A-Z][A-Z0-9]*)
-CPL ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+CPL ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01])
 CPL C
 CJNE A,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H)),([A-Z][A-Z0-9]*)
 CJNE A,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),([A-Z][A-Z0-9]*)
@@ -192,7 +192,7 @@ CJNE R6,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H)),([A-Z][A-Z0-9]*)
 CJNE R7,(#(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H)),([A-Z][A-Z0-9]*)
 PUSH ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 AJMP ([A-Z][A-Z0-9]*)
-CLR ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+CLR ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP\.[0-5]|IE\.[0-57])
 CLR C
 SWAP A
 XCH A,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
@@ -208,7 +208,7 @@ XCH A,R6
 XCH A,R7
 POP ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 ACALL ([A-Z][A-Z0-9]*)
-SETB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7])
+SETB ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|A|B)\.[0-7]|IP[0-5]|IE[0-57]|T[RF][01])
 SETB C
 DA A
 DJNZ ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),([A-Z][A-Z0-9]*)
