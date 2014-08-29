@@ -42,16 +42,12 @@ class Boo {
 			HelperMethods.parse();
 			HelperMethods.tokenize();
 			
-			if(!HelperMethods.printErrors()) {
-				HelperMethods.allocROMAddr();
-				HelperMethods.deLabelize();
-			}
+			HelperMethods.printErrors();
+			HelperMethods.allocROMAddr();
+			HelperMethods.deLabelize();
 			
-			else
-				return;
-			
-			if(!HelperMethods.printErrors())
-				HelperMethods.writeToFile();
+			HelperMethods.printErrors();
+			HelperMethods.writeToFile();
 		}
 		
 		else

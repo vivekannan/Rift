@@ -28,11 +28,8 @@ class Mnemonics {
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
 		
-		if(temp < 0 && temp > -257)
-			temp += 256;
-
-		else
-			temp += 4096;
+		if(temp < 0)
+			temp += temp > -257 ? 256 : 4096;
 		
 		s = Integer.toHexString(temp);
 

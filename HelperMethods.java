@@ -131,7 +131,7 @@ class HelperMethods {
 			
 			if(ORGDIRECTIVE.matcher(line).matches()) {
 				tokens = line.split(" ");
-				temp.org = tokens[1].replaceAll("H", "");
+				temp.org = tokens[1].replace('H', '\0');
 				line = "";
 			}
 			
@@ -198,19 +198,19 @@ class HelperMethods {
 	*	@throws None
 	*/
 	//TODO: None.
-	static boolean printErrors() {
+	static void printErrors() {
 		
-		boolean b = false;
+		boolean errors = false;
 		
 		for(Line temp : Boo.lines) {
 			if(!temp.errorStatements.isEmpty()) {
-				b = true;
+				errors = true;
 				for(String error : temp.errorStatements)
 					System.out.println(Boo.fileName + error);
 			}
 		}
 		
-		return b;
+		if(errors) System.exit(0);
 	}
 	
 	/**
