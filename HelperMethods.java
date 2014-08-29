@@ -201,8 +201,7 @@ class HelperMethods {
 	static boolean printErrors() {
 		
 		boolean b = false;
-		int errors;
-
+		
 		for(Line temp : Boo.lines) {
 			if(!temp.errorStatements.isEmpty()) {
 				b = true;
