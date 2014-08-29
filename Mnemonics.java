@@ -9,7 +9,7 @@ class Mnemonics {
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
 	String hexify(String s) throws Exception {
-		
+
 		int temp;
 		s = s.replaceAll("#", "");
 		
@@ -23,19 +23,19 @@ class Mnemonics {
 			else
 				temp = Integer.parseInt(s.replace('D', '\0'));
 		}
-		
+
 		catch(Exception e) {
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
 		
 		if(temp < 0 && temp > -257)
 			temp += 256;
-		
-		else if(temp < -256 && temp > -4097)
+
+		else
 			temp += 4096;
 		
 		s = Integer.toHexString(temp);
-		
+
 		if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
 			return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
 		
@@ -48,7 +48,7 @@ class Mnemonics {
 		String operand;
 		Matcher match;
 		List<Object[]> op = Boo.opcodes.get(this.getClass().getName());
-		
+
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
 			

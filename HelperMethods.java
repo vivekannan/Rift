@@ -160,7 +160,7 @@ class HelperMethods {
 					tokens = line.split(": ?", 2);
 					temp.label = tokens[0];
 					line = tokens[1];
-
+					
 					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END"))
 						temp.setError("Illegal label name.");
 				}
@@ -249,7 +249,7 @@ class HelperMethods {
 		for(Line temp : Boo.lines) {
 			if(temp.parsedLine.equals("END"))
 				return;
-
+			
 			if(temp.m != null) {
 				if(temp.m.opcode.indexOf(":") != -1) {
 					tokens = temp.m.opcode.split(":");
@@ -300,7 +300,7 @@ class HelperMethods {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
 						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
 				}
-
+				
 				String s = Integer.toHexString(jump).toUpperCase();
 				
 				return ("00" + s).substring(s.length());
