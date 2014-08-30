@@ -131,7 +131,7 @@ class HelperMethods {
 			
 			if(ORGDIRECTIVE.matcher(line).matches()) {
 				tokens = line.split(" ");
-				temp.org = tokens[1].replace('H', '\0');
+				temp.org = tokens[1].replace("H", "");
 				line = "";
 			}
 			
@@ -233,6 +233,11 @@ class HelperMethods {
 				start = Integer.parseInt(temp.org, 16);
 			
 			if(temp.m != null) {
+				if(start > 0xFFFF) {
+					temp.setError("Internal ROM full. Current line's address is " + start);
+					HelperMethods.printErrors();
+				}
+
 				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 				start += temp.m.size;
 			}

@@ -11,7 +11,7 @@ class Mnemonics {
 	String hexify(String s) throws Exception {
 
 		int temp;
-		s = s.replaceAll("#", "");
+		s = s.replace("#", "");
 		
 		try {
 			if(s.charAt(s.length() - 1) == 'H')
@@ -21,7 +21,7 @@ class Mnemonics {
 				temp = Integer.parseInt(s.substring(0, s.length() - 1), 2);
 			
 			else
-				temp = Integer.parseInt(s.replace('D', '\0'));
+				temp = Integer.parseInt(s.replace("D", ""));
 		}
 
 		catch(Exception e) {
@@ -63,7 +63,7 @@ class Mnemonics {
 						this.opcode += ":" + operand;
 					
 					else
-						this.opcode += hexify(operand);
+						this.opcode += this.hexify(operand);
 				}
 				
 				return true;

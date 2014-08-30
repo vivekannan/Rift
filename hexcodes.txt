@@ -113,7 +113,7 @@ XRL A,R7
 JNZ ([A-Z][A-Z0-9]*)
 ACALL ([A-Z][A-Z0-9]*)
 ORL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]|T[RF][01])
-JMP @A+DPTR
+JMP @A\+DPTR
 MOV A,(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 MOV @R0,(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
@@ -129,7 +129,7 @@ MOV R7,(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 SJMP ([A-Z][A-Z0-9]*)
 AJMP ([A-Z][A-Z0-9]*)
 ANL C,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]|T[RF][01])
-MOVC A,@A+DPTR
+MOVC A,@A\+DPTR
 DIV AB
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B),@R0
@@ -145,7 +145,7 @@ MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T
 MOV DPTR,(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 ACALL ([A-Z][A-Z0-9]*)
 MOV ([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|(?:P[0-3]|PSW|[TS]CON|I[EP]|A|B)\.[0-7]|T[RF][01]),C
-MOVC A,@A+DPTR
+MOVC A,@A\+DPTR
 SUBB A,(#-?(?:[01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H))
 SUBB A,([01]*B|\d*D?|(?:0[A-F]|\d)[0-9A-F]*H|PSW|SP|DP[HL]|P[0-3]|I[PE]|TMOD|TCON|T[HL][01]|[SP]CON|SBUF|B)
 SUBB A,@R0
