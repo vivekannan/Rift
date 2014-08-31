@@ -127,8 +127,15 @@ class HelperMethods {
 			if(commentIndex != -1)
 				line = line.substring(0, commentIndex);
 			
-			line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+			if(line.indexOf('\"') == -1)
+				line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 			
+			else {
+				tokens = line.split("\"", 2);
+				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+				line = (tokens[0] + "\"" + tokens[1]).trim();
+			}
+
 			if(ORGDIRECTIVE.matcher(line).matches()) {
 				tokens = line.split(" ");
 				temp.org = tokens[1].replace("H", "");

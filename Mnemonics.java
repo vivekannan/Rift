@@ -12,7 +12,7 @@ class Mnemonics {
 
 		String temp = "";
 		s = s.substring(1, s.length() - 1);
-
+		
 		for(int i = 0; i < s.length(); i++)
 			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
 
@@ -36,22 +36,21 @@ class Mnemonics {
 			
 			else
 				temp = Integer.parseInt(s.replace("D", ""));
+
+			if(temp < 0)
+				temp += temp > -255 ? 256 : 65536;
+
+			s = Integer.toHexString(temp);
+
+			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
+				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
+		
+			throw new Exception();
 		}
 
 		catch(Exception e) {
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
-		
-		if(temp < 0)
-			temp += temp > -257 ? 256 : 4096;
-		
-		s = Integer.toHexString(temp);
-
-		if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
-			return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
-		
-		else
-			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 	}
 	
 	boolean validate(String operands) throws Exception {
