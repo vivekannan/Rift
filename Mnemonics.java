@@ -8,13 +8,27 @@ class Mnemonics {
 	String opcode;
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
+	int asciify(String s) throws Exception {
+
+		String temp = "";
+		s = s.substring(1, s.length() - 1);
+
+		for(int i = 0; i < s.length(); i++)
+			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
+
+		return Integer.parseInt(temp, 16);
+	}
+
 	String hexify(String s) throws Exception {
 
 		int temp;
 		s = s.replace("#", "");
 		
 		try {
-			if(s.charAt(s.length() - 1) == 'H')
+			if(s.charAt(0) == '\"')
+				temp = this.asciify(s);
+
+			else if(s.charAt(s.length() - 1) == 'H')
 				temp = Integer.parseInt(s.substring(0, s.length() - 1), 16);
 			
 			else if(s.charAt(s.length() - 1) == 'B')
