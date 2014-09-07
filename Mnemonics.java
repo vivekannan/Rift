@@ -99,10 +99,10 @@ class MOVX extends Mnemonics {
 class ADD extends Mnemonics {
 }
 
-class ADDC extends ADD {
+class ADDC extends Mnemonics {
 }
 
-class SUBB extends ADD {
+class SUBB extends Mnemonics {
 }
 
 class INC extends Mnemonics {
@@ -114,13 +114,13 @@ class DEC extends Mnemonics {
 class MUL extends Mnemonics {
 }
 
-class DIV extends MUL {
+class DIV extends Mnemonics {
 }
 
 class ANL extends Mnemonics {
 }
 
-class ORL extends ANL {
+class ORL extends Mnemonics {
 }
 
 class XRL extends Mnemonics {
@@ -129,77 +129,76 @@ class XRL extends Mnemonics {
 class PUSH extends Mnemonics {
 }
 
-class POP extends PUSH {
+class POP extends Mnemonics {
 }
 
 class DA extends Mnemonics {
 }
 
-class RL extends DA {
+class RL extends Mnemonics {
 }
 
-class RLC extends DA {
+class RLC extends Mnemonics {
 }
 
-class RR extends DA {
+class RR extends Mnemonics {
 }
 
-class RRC extends DA {
+class RRC extends Mnemonics {
 }
 
-class SWAP extends DA {
+class SWAP extends Mnemonics {
 }
 
 class XCH extends Mnemonics {
 }
 
-class XCHD extends XCH {
+class XCHD extends Mnemonics {
 }
 
 class CLR extends Mnemonics {
 }
 
-class CPL extends CLR {
+class CPL extends Mnemonics {
 }
 
-class SETB extends CLR {
+class SETB extends Mnemonics {
 }
 
 class JC extends Mnemonics {
 }
 
-class JNC extends JC {
+class JNC extends Mnemonics {
 }
 
 class JB extends Mnemonics {
 }
 
-class JNB extends JB {
+class JNB extends Mnemonics {
 }
 
-class JBC extends JB {
+class JBC extends Mnemonics {
 }
 
 class ACALL extends Mnemonics {
 }
 
-class LCALL extends ACALL {
+class LCALL extends Mnemonics {
 }
 
-class AJMP extends ACALL {
+class AJMP extends Mnemonics {
 }
 
-class LJMP extends ACALL {
+class LJMP extends Mnemonics {
 }
 
-class SJMP extends ACALL {
-
+class SJMP extends Mnemonics {
 }
 
-class JZ extends ACALL {
+class JZ extends Mnemonics {
 }
 
-class JNZ extends ACALL {
+class JNZ extends Mnemonics {
 }
 
 class RET extends Mnemonics {
@@ -212,7 +211,6 @@ class NOP extends Mnemonics {
 }
 
 class JMP extends Mnemonics {
-
 }
 
 class CJNE extends Mnemonics {

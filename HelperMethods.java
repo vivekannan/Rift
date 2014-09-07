@@ -9,8 +9,6 @@ import java.lang.reflect.Constructor;
 
 class HelperMethods {
 	
-	final static Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
-	
 	static void getOpcodes() {
 		
 		Object[] op;
@@ -38,7 +36,7 @@ class HelperMethods {
 					Boo.opcodes.put(tokens[0], temp);
 				}
 			}
-
+			
 			opSource.close();
 		}
 		
@@ -49,28 +47,28 @@ class HelperMethods {
 	}
 	
 	static void getSymbols() {
-
+		
 		String line;
 		String[] tokens;
 		BufferedReader symbolSource;
-
+		
 		try {
 			symbolSource = new BufferedReader(new FileReader("symbols.txt"));
-
+			
 			while((line = symbolSource.readLine()) != null) {
 				tokens = line.split(" ");
 				Boo.symbols.put(tokens[0], tokens[1]);
 			}
-
+			
 			symbolSource.close();
 		}
-
+		
 		catch(Exception e) {
 			System.out.println("Can't find symbols! Exiting...");
 			System.exit(0);
 		}
 	}
-
+	
 	/**
 	*	Reads lines using Boo.fileName as filename and stores the lines in Boo.lines.
 	*	
@@ -116,9 +114,10 @@ class HelperMethods {
 	//TODO: Support all the other directives (DB, EQU, BIT). Have seperate hashmap for directives.
 	static void parse() {
 		
-		String[] tokens;
 		String line;
+		String[] tokens;
 		int commentIndex;
+		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.rawLine;
@@ -135,7 +134,7 @@ class HelperMethods {
 				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 				line = (tokens[0] + "\"" + tokens[1]).trim();
 			}
-
+			
 			if(ORGDIRECTIVE.matcher(line).matches()) {
 				tokens = line.split(" ");
 				temp.org = tokens[1].replace("H", "");
@@ -143,7 +142,7 @@ class HelperMethods {
 			}
 			
 			temp.parsedLine = line;
-
+			
 			if(line.equals("END"))
 				return;
 		}
@@ -172,10 +171,8 @@ class HelperMethods {
 						temp.setError("Illegal label name.");
 				}
 				
-				if(line.equals("")) {
-					temp.setError("Hanging label encountered.");
+				if(line.equals(""))
 					continue;
-				}
 				
 				tokens = line.split(" ", 2);
 				
@@ -212,6 +209,7 @@ class HelperMethods {
 		for(Line temp : Boo.lines) {
 			if(!temp.errorStatements.isEmpty()) {
 				errors = true;
+				
 				for(String error : temp.errorStatements)
 					System.out.println(Boo.fileName + error);
 			}
@@ -240,14 +238,17 @@ class HelperMethods {
 				start = Integer.parseInt(temp.org, 16);
 			
 			if(temp.m != null) {
-				if(start > 0xFFFF) {
-					temp.setError("Internal ROM full. Current line's address is " + start);
-					HelperMethods.printErrors();
-				}
-
 				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 				start += temp.m.size;
+				
+				if(start > 0xFFFF) {
+					temp.setError("Internal ROM full.");
+					return;
+				}
 			}
+			
+			else if(temp.label != null)
+				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 			
 			else
 				temp.address = ""; //Mnemonic devoid statements do not get any address.
@@ -267,7 +268,10 @@ class HelperMethods {
 					tokens = temp.m.opcode.split(":");
 					
 					try {
-						temp.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], temp);
+						if(temp.m.getClass().getName().equals("AJMP") || temp.m.getClass().getName().equals("ACALL"))
+							temp.m.opcode = HelperMethods.calcAddr(tokens[1], temp);
+						else
+							temp.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], temp);
 					}
 					
 					catch(Exception e) {
@@ -308,9 +312,15 @@ class HelperMethods {
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
 				//Not sure about jump range of AJMP.
-				else if(className.equals("AJMP")) {
+				else if(className.equals("AJMP") || className.equals("ACALL")) {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
-						throw new Exception(String.format("Label address is not a part of the AJMP 2K block."));
+						throw new Exception(String.format("Label address is not a part of the %s 2KB block.", className));
+					
+					String opcode = Integer.toBinaryString(jump);
+					opcode = ("00000000000" + opcode).substring(opcode.length());
+					opcode = Integer.toHexString(Integer.parseInt(opcode.substring(0, 3) + (className.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(3), 2));
+					
+					return ("0000" + opcode).substring(opcode.length()).toUpperCase();
 				}
 				
 				String s = Integer.toHexString(jump).toUpperCase();

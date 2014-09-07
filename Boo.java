@@ -40,12 +40,12 @@ class Boo {
 			HelperMethods.getSymbols();
 			HelperMethods.read();
 			HelperMethods.parse();
-			HelperMethods.tokenize();
 			
+			HelperMethods.tokenize();
 			HelperMethods.printErrors();
 			HelperMethods.allocROMAddr();
+			HelperMethods.printErrors();
 			HelperMethods.deLabelize();
-			
 			HelperMethods.printErrors();
 			HelperMethods.writeToFile();
 		}
