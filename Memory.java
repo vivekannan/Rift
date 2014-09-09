@@ -1,20 +1,5 @@
 class Memory {
-}
-
-class InternalRAM {
-}
-
-class ExternalRAM {
-}
-
-class InternalROM {
-}
-
-class ExternalROM {
-}
-
-class SpecialFunctionRegisters {
-}
-
-class GeneralPurposeRegisters {
+	
+	static int[] internalRAM = new int[128];
+	static int[] externalROM = new int[65536];
 }

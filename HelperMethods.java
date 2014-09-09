@@ -347,11 +347,11 @@ class HelperMethods {
 			int dotIndex = Boo.fileName.lastIndexOf(".");
 			PrintWriter lstFile = new PrintWriter(Boo.fileName.substring(0, dotIndex > 0 ? dotIndex : Boo.fileName.length()) + ".lst", "UTF-8");
 			
-			for(Line temp : Boo.lines) {
-				if(temp.parsedLine == null) //Write to file until "END" directive.
+			for(Line line : Boo.lines) {
+				if(line.parsedLine == null) //Write to file until "END" directive.
 					return;
 				
-				lstFile.println(String.format("%-4d%-6s%-8s%s", temp.lineNumber, temp.address, temp.m != null ? temp.m.opcode : "", temp.rawLine));
+				lstFile.println(String.format("%-4d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 				lstFile.flush();
 			}
 			
@@ -374,11 +374,11 @@ class HelperMethods {
 	//TODO: None.
 	static void printToStdout() {
 		
-		for(Line temp : Boo.lines) {
-			if(temp.parsedLine == null) //Write to stdout until "END" directive.
+		for(Line line : Boo.lines) {
+			if(line.parsedLine == null) //Write to stdout until "END" directive.
 				return;
 			
-			System.out.println(String.format("%-4d%-6s%-8s%s", temp.lineNumber, temp.address, temp.m != null ? temp.m.opcode : "", temp.rawLine));
+			System.out.println(String.format("%-4d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 		}
 	}
 }
