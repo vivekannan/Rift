@@ -381,4 +381,17 @@ class HelperMethods {
 			System.out.println(String.format("%-4d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 		}
 	}
+	
+	static void run() {
+		
+		for(Line line : Boo.lines) {
+			if(line.parsedLine == null)
+				break;
+			
+			if(line.m == null)
+				continue;
+			
+			
+		}
+	}
 }
