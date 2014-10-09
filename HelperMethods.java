@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.util.regex.Pattern;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Constructor;
 
 class HelperMethods {
 	
@@ -14,8 +13,8 @@ class HelperMethods {
 		Object[] op;
 		String line;
 		String[] tokens;
-		ArrayList<Object[]> temp;
 		BufferedReader opSource;
+		ArrayList<Object[]> temp;
 		
 		try {
 			opSource = new BufferedReader(new FileReader("hexcodes.txt"));
@@ -114,17 +113,18 @@ class HelperMethods {
 	//TODO: Support all the other directives (DB, EQU, BIT). Have seperate hashmap for directives.
 	static void parse() {
 		
+		int index;
 		String line;
 		String[] tokens;
-		int commentIndex;
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
+		final Pattern EQUDIRECTIVE = Pattern.compile("EQU [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]*B|\\d*D?|(?:0[A-F]|\\d)[0-9A-F]*H)|#\"\\p{ASCII}*\")");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.rawLine;
-			commentIndex = line.indexOf(';');
+			index = line.indexOf(';');
 			
-			if(commentIndex != -1)
-				line = line.substring(0, commentIndex);
+			if(index != -1)
+				line = line.substring(0, index);
 			
 			if(line.indexOf('\"') == -1)
 				line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
@@ -139,6 +139,29 @@ class HelperMethods {
 				tokens = line.split(" ");
 				temp.org = tokens[1].replace("H", "");
 				line = "";
+			}
+			
+			else if (EQUDIRECTIVE.matcher(line).matches()) {
+				tokens = line.split(" ");
+				
+				if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || tokens[1].equals("ORG") || tokens[1].equals("END") || tokens[1].equals("EQU"))
+					temp.setError("Illegal symbol name.");
+				
+				else
+					Boo.symbols.put(tokens[1], tokens[2]);
+				
+				line = "";
+			}
+			
+			else {
+				index = line.lastIndexOf(" ") + 1;
+				tokens = line.substring(index).split(",");
+				line = line.substring(0, index);
+				
+				for(int i = 0; i < tokens.length; i++)
+					line += (Boo.symbols.containsKey(tokens[i]) ? Boo.symbols.get(tokens[i]) : tokens[i]) + ",";
+				
+				line = line.substring(0, line.length() - 1);
 			}
 			
 			temp.parsedLine = line;
@@ -167,7 +190,7 @@ class HelperMethods {
 					temp.label = tokens[0];
 					line = tokens[1];
 					
-					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END"))
+					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END") || temp.label.equals("EQU"))
 						temp.setError("Illegal label name.");
 				}
 				
@@ -215,7 +238,8 @@ class HelperMethods {
 			}
 		}
 		
-		if(errors) System.exit(0);
+		if(errors)
+			System.exit(0);
 	}
 	
 	/**
@@ -291,7 +315,7 @@ class HelperMethods {
 	*	@throws Exception When the given label cannot be found in the asm source.
 	*	@throws Exception When jump range for SJMP exceeds limit.
 	*/
-	//TODO: Support AJMP and ACALL Mnemonics. Beautify.
+	//TODO: Beautify.
 	static String calcAddr(String label, Line line) throws Exception {
 		
 		for(Line temp : Boo.lines) {
@@ -351,7 +375,7 @@ class HelperMethods {
 				if(line.parsedLine == null) //Write to file until "END" directive.
 					return;
 				
-				lstFile.println(String.format("%-4d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 				lstFile.flush();
 			}
 			
@@ -378,20 +402,7 @@ class HelperMethods {
 			if(line.parsedLine == null) //Write to stdout until "END" directive.
 				return;
 			
-			System.out.println(String.format("%-4d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
-		}
-	}
-	
-	static void run() {
-		
-		for(Line line : Boo.lines) {
-			if(line.parsedLine == null)
-				break;
-			
-			if(line.m == null)
-				continue;
-			
-			
+			System.out.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 		}
 	}
 }
