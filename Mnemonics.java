@@ -22,7 +22,6 @@ class Mnemonics {
 	String hexify(String s) throws Exception {
 		
 		int temp;
-		s = s.replace("#", "");
 		
 		try {
 			if(s.charAt(0) == '\"')

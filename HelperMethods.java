@@ -118,7 +118,7 @@ class HelperMethods {
 		String[] tokens;
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
 		final Pattern EQUDIRECTIVE = Pattern.compile("EQU [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H)|#\"\\p{ASCII}+\")");
-		final Pattern DBDIRECTIVE = Pattern.compile("DB (?:[01]+B,|\\d+D?,|(?:0[A-F]|\\d)[0-9A-F]*H,|\"\\p{ASCII}+\",)*(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H|\"\\p{ASCII}+\")");
+		final Pattern DBDIRECTIVE = Pattern.compile("DB (?:(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H|\"\\p{ASCII}+\")(?!,$),?)+$");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.rawLine;
