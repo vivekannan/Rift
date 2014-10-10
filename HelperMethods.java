@@ -117,7 +117,8 @@ class HelperMethods {
 		String line;
 		String[] tokens;
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
-		final Pattern EQUDIRECTIVE = Pattern.compile("EQU [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]*B|\\d*D?|(?:0[A-F]|\\d)[0-9A-F]*H)|#\"\\p{ASCII}*\")");
+		final Pattern EQUDIRECTIVE = Pattern.compile("EQU [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H)|#\"\\p{ASCII}+\")");
+		final Pattern DBDIRECTIVE = Pattern.compile("DB (?:[01]+B,|\\d+D?,|(?:0[A-F]|\\d)[0-9A-F]*H,|\"\\p{ASCII}+\",)*(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H|\"\\p{ASCII}+\")");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.rawLine;
@@ -135,20 +136,26 @@ class HelperMethods {
 				line = (tokens[0] + "\"" + tokens[1]).trim();
 			}
 			
-			if(ORGDIRECTIVE.matcher(line).matches()) {
-				tokens = line.split(" ");
-				temp.org = tokens[1].replace("H", "");
-				line = "";
-			}
-			
-			else if (EQUDIRECTIVE.matcher(line).matches()) {
-				tokens = line.split(" ");
+			if(line.startsWith("ORG ") || line.startsWith("EQU ") || line.startsWith("DB ")) {
+				if(ORGDIRECTIVE.matcher(line).matches()) {
+					tokens = line.split(" ");
+					temp.org = tokens[1].replace("H", "");
+				}
 				
-				if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || tokens[1].equals("ORG") || tokens[1].equals("END") || tokens[1].equals("EQU"))
-					temp.setError("Illegal symbol name.");
+				else if (EQUDIRECTIVE.matcher(line).matches()) {
+					tokens = line.split(" ");
+					
+					if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || tokens[1].equals("ORG") || tokens[1].equals("END") || tokens[1].equals("EQU"))
+						temp.setError("Illegal symbol name.");
+					
+					else
+						Boo.symbols.put(tokens[1], tokens[2]);
+				}
+				
+				else if(DBDIRECTIVE.matcher(line).matches()) {}
 				
 				else
-					Boo.symbols.put(tokens[1], tokens[2]);
+					temp.setError("Invalid operands for " + line.split(" ")[0] + " directive.");
 				
 				line = "";
 			}

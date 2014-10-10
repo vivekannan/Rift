@@ -9,25 +9,25 @@ class Mnemonics {
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
 	int asciify(String s) throws Exception {
-
+		
 		String temp = "";
 		s = s.substring(1, s.length() - 1);
 		
 		for(int i = 0; i < s.length(); i++)
 			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
-
+		
 		return Integer.parseInt(temp, 16);
 	}
-
+	
 	String hexify(String s) throws Exception {
-
+		
 		int temp;
 		s = s.replace("#", "");
 		
 		try {
 			if(s.charAt(0) == '\"')
 				temp = this.asciify(s);
-
+			
 			else if(s.charAt(s.length() - 1) == 'H')
 				temp = Integer.parseInt(s.substring(0, s.length() - 1), 16);
 			
@@ -36,18 +36,18 @@ class Mnemonics {
 			
 			else
 				temp = Integer.parseInt(s.replace("D", ""));
-
+			
 			if(temp < 0)
 				temp += temp > -255 ? 256 : 65536;
-
+			
 			s = Integer.toHexString(temp);
-
+			
 			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
 				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
 		
 			throw new Exception();
 		}
-
+		
 		catch(Exception e) {
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
@@ -58,7 +58,7 @@ class Mnemonics {
 		String operand;
 		Matcher match;
 		List<Object[]> op = Boo.opcodes.get(this.getClass().getName());
-
+		
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
 			
