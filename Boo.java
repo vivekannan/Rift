@@ -1,4 +1,6 @@
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
 
 class Line {
@@ -30,6 +32,7 @@ class Boo {
 	static ArrayList<Line> lines = new ArrayList<Line>();
 	static HashMap<String, String> symbols = new HashMap<String, String>();
 	static HashMap<String, ArrayList<Object[]>> opcodes = new HashMap<String, ArrayList<Object[]>>();
+	static HashSet<String> directives = new HashSet<String>(Arrays.asList("ORG", "END", "BIT", "EQU", "DB"));
 	
 	public static void main(String args[]) {
 		

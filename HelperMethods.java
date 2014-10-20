@@ -117,8 +117,7 @@ class HelperMethods {
 		String line;
 		String[] tokens;
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
-		final Pattern EQUDIRECTIVE = Pattern.compile("EQU [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H)|#\"\\p{ASCII}+\")");
-		final Pattern DBDIRECTIVE = Pattern.compile("DB (?:(?:[01]+B|\\d+D?|(?:0[A-F]|\\d)[0-9A-F]*H|\"\\p{ASCII}+\")(?!,$),?)+$");
+		final Pattern EQUDIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"\\p{ASCII}+\")");
 		
 		for(Line temp : Boo.lines) {
 			line = temp.rawLine;
@@ -136,7 +135,7 @@ class HelperMethods {
 				line = (tokens[0] + "\"" + tokens[1]).trim();
 			}
 			
-			if(line.startsWith("ORG ") || line.startsWith("EQU ") || line.startsWith("DB ")) {
+			if(line.startsWith("BIT ") || line.startsWith("EQU ") || line.startsWith("ORG ")) {
 				if(ORGDIRECTIVE.matcher(line).matches()) {
 					tokens = line.split(" ");
 					temp.org = tokens[1].replace("H", "");
@@ -145,14 +144,12 @@ class HelperMethods {
 				else if (EQUDIRECTIVE.matcher(line).matches()) {
 					tokens = line.split(" ");
 					
-					if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || tokens[1].equals("ORG") || tokens[1].equals("END") || tokens[1].equals("EQU"))
+					if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || Boo.directives.contains(tokens[1]))
 						temp.setError("Illegal symbol name.");
 					
 					else
 						Boo.symbols.put(tokens[1], tokens[2]);
 				}
-				
-				else if(DBDIRECTIVE.matcher(line).matches()) {}
 				
 				else
 					temp.setError("Invalid operands for " + line.split(" ")[0] + " directive.");
@@ -162,7 +159,7 @@ class HelperMethods {
 			
 			else {
 				index = line.lastIndexOf(" ") + 1;
-				tokens = line.substring(index).split(",");
+				tokens = line.substring(index).split(",");   //Splits data such as ",,". Big bug.
 				line = line.substring(0, index);
 				
 				for(int i = 0; i < tokens.length; i++)
@@ -197,7 +194,7 @@ class HelperMethods {
 					temp.label = tokens[0];
 					line = tokens[1];
 					
-					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || temp.label.equals("ORG") || temp.label.equals("END") || temp.label.equals("EQU"))
+					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || Boo.directives.contains(temp.label))
 						temp.setError("Illegal label name.");
 				}
 				
@@ -382,7 +379,7 @@ class HelperMethods {
 				if(line.parsedLine == null) //Write to file until "END" directive.
 					return;
 				
-				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
 				lstFile.flush();
 			}
 			
@@ -409,7 +406,7 @@ class HelperMethods {
 			if(line.parsedLine == null) //Write to stdout until "END" directive.
 				return;
 			
-			System.out.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
+			System.out.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
 		}
 	}
 }

@@ -1,11 +1,11 @@
-import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Mnemonics {
 	
 	int size;
-	String opcode;
+	String opcode = "";
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
 	int asciify(String s) throws Exception {
@@ -41,6 +41,9 @@ class Mnemonics {
 			
 			s = Integer.toHexString(temp);
 			
+			if(this.getClass().getName().equals("DB"))
+				return (s.length() % 2 == 0 ? s : "0" + s).toUpperCase();
+			
 			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
 				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
 		
@@ -48,6 +51,9 @@ class Mnemonics {
 		}
 		
 		catch(Exception e) {
+			if(this.getClass().getName().equals("DB"))
+				throw new Exception("Directive DB allows only upto 32 bits of data.");
+			
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
 	}
@@ -56,7 +62,7 @@ class Mnemonics {
 		
 		String operand;
 		Matcher match;
-		List<Object[]> op = Boo.opcodes.get(this.getClass().getName());
+		ArrayList<Object[]> op = Boo.opcodes.get(this.getClass().getName());
 		
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
@@ -216,4 +222,25 @@ class CJNE extends Mnemonics {
 }
 
 class DJNZ extends Mnemonics {
+}
+
+class DB extends Mnemonics {
+	
+	boolean validate(String operands) throws Exception {
+		
+		Matcher match;
+		Pattern p = Pattern.compile("(?:(?:[01]+B|\\d+D?|\\d[0-9A-F]*H|\"\\p{ASCII}+\")(?:,|$))+");
+		
+		if(!p.matcher(operands).matches())
+			throw new Exception("Invalid operands for DB directive.");
+		
+		String[] tokens = operands.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$) *");
+		
+		for(String data : tokens)
+			this.opcode += this.hexify(data);
+		
+		this.size = this.opcode.length();
+		
+		return true;
+	}
 }
