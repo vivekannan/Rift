@@ -8,7 +8,7 @@ class Mnemonics {
 	String opcode = "";
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
-	int asciify(String s) throws Exception {
+	String asciify(String s) throws Exception {
 		
 		String temp = "";
 		s = s.substring(1, s.length() - 1);
@@ -16,7 +16,7 @@ class Mnemonics {
 		for(int i = 0; i < s.length(); i++)
 			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
 		
-		return Integer.parseInt(temp, 16);
+		return temp;
 	}
 	
 	String hexify(String s) throws Exception {
@@ -24,8 +24,14 @@ class Mnemonics {
 		int temp;
 		
 		try {
-			if(s.charAt(0) == '\"')
-				temp = this.asciify(s);
+			if(s.charAt(0) == '\"') {
+				s = this.asciify(s);
+				
+				if(this.getClass().getName().equals("DB"))
+					return (s.length() % 2 == 0 ? s : "0" + s).toUpperCase();
+				
+				temp = Integer.parseInt(s, 16);
+			}
 			
 			else if(s.charAt(s.length() - 1) == 'H')
 				temp = Integer.parseInt(s.substring(0, s.length() - 1), 16);
@@ -41,9 +47,6 @@ class Mnemonics {
 			
 			s = Integer.toHexString(temp);
 			
-			if(this.getClass().getName().equals("DB"))
-				return (s.length() % 2 == 0 ? s : "0" + s).toUpperCase();
-			
 			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
 				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
 		
@@ -52,7 +55,7 @@ class Mnemonics {
 		
 		catch(Exception e) {
 			if(this.getClass().getName().equals("DB"))
-				throw new Exception("Directive DB allows only upto 32 bits of data.");
+				throw new Exception("Directive DB expects 8-bit data or String.");
 			
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
 		}
@@ -229,7 +232,7 @@ class DB extends Mnemonics {
 	boolean validate(String operands) throws Exception {
 		
 		Matcher match;
-		Pattern p = Pattern.compile("(?:(?:[01]+B|\\d+D?|\\d[0-9A-F]*H|\"\\p{ASCII}+\")(?:,|$))+");
+		Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\")(?:, *| *$))+");
 		
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
@@ -239,7 +242,7 @@ class DB extends Mnemonics {
 		for(String data : tokens)
 			this.opcode += this.hexify(data);
 		
-		this.size = this.opcode.length();
+		this.size = this.opcode.length() / 2;
 		
 		return true;
 	}
