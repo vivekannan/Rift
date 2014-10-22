@@ -232,7 +232,7 @@ class DB extends Mnemonics {
 	boolean validate(String operands) throws Exception {
 		
 		Matcher match;
-		Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\")(?:, *| *$))+");
+		Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\") *(?:, *|$))+");
 		
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
