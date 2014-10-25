@@ -22,7 +22,7 @@ class Line {
 	
 	void setError(String error) {
 		
-		this.errorStatements.add(String.format("::%d: %s\n%s", this.lineNumber, error, this.rawLine));
+		this.errorStatements.add(String.format("%d: %s\n%s", this.lineNumber, error, this.rawLine));
 	}
 }
 

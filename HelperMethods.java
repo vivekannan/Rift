@@ -238,7 +238,7 @@ class HelperMethods {
 				errors = true;
 				
 				for(String error : temp.errorStatements)
-					System.out.println(Boo.fileName + error);
+					System.out.println(Boo.fileName + "::" + error);
 			}
 		}
 		
