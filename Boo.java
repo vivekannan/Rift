@@ -51,6 +51,7 @@ class Boo {
 			HelperMethods.deLabelize();
 			HelperMethods.printErrors();
 			HelperMethods.writeToFile();
+			HelperMethods.createHex();
 		}
 		
 		else

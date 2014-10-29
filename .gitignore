@@ -1,6 +1,7 @@
 *~
 *.asm
 *.lst
+*.hex
 *.class
 *.sublime-*
 *.py

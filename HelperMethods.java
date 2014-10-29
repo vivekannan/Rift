@@ -380,9 +380,9 @@ class HelperMethods {
 					return;
 				
 				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
-				lstFile.flush();
 			}
 			
+			lstFile.flush();
 			lstFile.close();
 		}
 		
@@ -407,6 +407,40 @@ class HelperMethods {
 				return;
 			
 			System.out.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
+		}
+	}
+	
+	static void createHex() {
+		
+		try {
+			int checksum;
+			String temp;
+			int dotIndex = Boo.fileName.lastIndexOf(".");
+			PrintWriter hexFile = new PrintWriter(Boo.fileName.substring(0, dotIndex > 0 ? dotIndex : Boo.fileName.length()) + ".hex", "UTF-8");
+			
+			for(Line line : Boo.lines) {
+				if(line.parsedLine == null)
+					break;
+				
+				checksum = 0;
+				
+				if(line.m != null) {
+					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.opcode.length() / 2), line.address, line.m.opcode).replace(' ', '0');
+					
+					for(int i = 0; i < temp.length() / 2; i++)
+						checksum += Integer.parseInt(temp.substring(2 * i, 2 * (i + 1)), 16);
+					
+					hexFile.println(":" + temp + Integer.toHexString(checksum % 256).toUpperCase());
+				}
+			}
+			
+			hexFile.println(":00000001FF");
+			hexFile.flush();
+			hexFile.close();
+		}
+		
+		catch(Exception e) {
+			System.out.println("Cannot create hex file.");
 		}
 	}
 }
