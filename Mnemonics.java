@@ -5,8 +5,19 @@ import java.util.regex.Pattern;
 class Mnemonics {
 	
 	int size;
+	String mnemonic;
 	String opcode = "";
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
+	
+	Mnemonics() {}
+	
+	Mnemonics(String mnemonic) throws Exception {
+		
+		if(!Boo.opcodes.containsKey(mnemonic))
+			throw new Exception("Unidentified Mnemonic: " + mnemonic);
+		
+		this.mnemonic = mnemonic;
+	}
 	
 	String asciify(String s) throws Exception {
 		
@@ -27,7 +38,7 @@ class Mnemonics {
 			if(s.charAt(0) == '\"') {
 				s = this.asciify(s);
 				
-				if(this.getClass().getName().equals("DB"))
+				if(this.mnemonic == null)
 					return (s.length() % 2 == 0 ? s : "0" + s).toUpperCase();
 				
 				temp = Integer.parseInt(s, 16);
@@ -54,18 +65,18 @@ class Mnemonics {
 		}
 		
 		catch(Exception e) {
-			if(this.getClass().getName().equals("DB"))
+			if(this.mnemonic == null)
 				throw new Exception("Directive DB expects 8-bit data or String.");
 			
-			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.getClass().getName(), this.opcode.equals("90") ? 16 : 8));
+			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.mnemonic, this.opcode.equals("90") ? 16 : 8));
 		}
 	}
 	
 	boolean validate(String operands) throws Exception {
 		
-		String operand;
 		Matcher match;
-		ArrayList<Object[]> op = Boo.opcodes.get(this.getClass().getName());
+		String operand;
+		ArrayList<Object[]> op = Boo.opcodes.get(this.mnemonic);
 		
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
@@ -95,144 +106,12 @@ class Mnemonics {
 	}
 }
 
-class MOV extends Mnemonics {
-}
-
-class MOVC extends Mnemonics {
-}
-
-class MOVX extends Mnemonics {
-}
-
-class ADD extends Mnemonics {
-}
-
-class ADDC extends Mnemonics {
-}
-
-class SUBB extends Mnemonics {
-}
-
-class INC extends Mnemonics {
-}
-
-class DEC extends Mnemonics {
-}
-
-class MUL extends Mnemonics {
-}
-
-class DIV extends Mnemonics {
-}
-
-class ANL extends Mnemonics {
-}
-
-class ORL extends Mnemonics {
-}
-
-class XRL extends Mnemonics {
-}
-
-class PUSH extends Mnemonics {
-}
-
-class POP extends Mnemonics {
-}
-
-class DA extends Mnemonics {
-}
-
-class RL extends Mnemonics {
-}
-
-class RLC extends Mnemonics {
-}
-
-class RR extends Mnemonics {
-}
-
-class RRC extends Mnemonics {
-}
-
-class SWAP extends Mnemonics {
-}
-
-class XCH extends Mnemonics {
-}
-
-class XCHD extends Mnemonics {
-}
-
-class CLR extends Mnemonics {
-}
-
-class CPL extends Mnemonics {
-}
-
-class SETB extends Mnemonics {
-}
-
-class JC extends Mnemonics {
-}
-
-class JNC extends Mnemonics {
-}
-
-class JB extends Mnemonics {
-}
-
-class JNB extends Mnemonics {
-}
-
-class JBC extends Mnemonics {
-}
-
-class ACALL extends Mnemonics {
-}
-
-class LCALL extends Mnemonics {
-}
-
-class AJMP extends Mnemonics {
-}
-
-class LJMP extends Mnemonics {
-}
-
-class SJMP extends Mnemonics {
-}
-
-class JZ extends Mnemonics {
-}
-
-class JNZ extends Mnemonics {
-}
-
-class RET extends Mnemonics {
-}
-
-class RETI extends Mnemonics {
-}
-
-class NOP extends Mnemonics {
-}
-
-class JMP extends Mnemonics {
-}
-
-class CJNE extends Mnemonics {
-}
-
-class DJNZ extends Mnemonics {
-}
-
 class DB extends Mnemonics {
 	
 	boolean validate(String operands) throws Exception {
 		
 		Matcher match;
-		Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\") *(?:, *|$))+");
+		final Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\") *(?:, *|$))+");
 		
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");

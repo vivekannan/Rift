@@ -204,14 +204,10 @@ class HelperMethods {
 				tokens = line.split(" ", 2);
 				
 				try {
-					temp.m = (Mnemonics) Class.forName(tokens[0]).newInstance();
+					temp.m = (tokens[0].equals("DB")) ? new DB() : new Mnemonics(tokens[0]);
 					
 					if(!temp.m.validate(tokens.length == 2 ? tokens[1] : ""))
 						temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
-				}
-				
-				catch(ClassNotFoundException e) {
-					temp.setError("Unindentified Mnemonic: " + tokens[0]);
 				}
 				
 				catch(Exception e) {
@@ -362,7 +358,7 @@ class HelperMethods {
 
 	/**
 	*	Creates a file with basename of Boo.fileName with extension ".lst".
-	*	The lst content is then written to the file. If an exception occurs, falls back to stdout.
+	*	The lst content is then written to the file. If an exception occurs, displays a message.
 	*	
 	*	@param None
 	*	@return void
@@ -387,26 +383,7 @@ class HelperMethods {
 		}
 		
 		catch(Exception e) {
-			System.out.println("Cannot create lst file. Falling back to stdout.");
-			printToStdout();
-		}
-	}
-	
-	/**
-	*	Prints the lst file to stdout.
-	*	
-	*	@param None
-	*	@return void
-	*	@throws None
-	*/
-	//TODO: None.
-	static void printToStdout() {
-		
-		for(Line line : Boo.lines) {
-			if(line.parsedLine == null) //Write to stdout until "END" directive.
-				return;
-			
-			System.out.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
+			System.out.println("Cannot create lst file.");
 		}
 	}
 	
