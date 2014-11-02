@@ -323,26 +323,26 @@ class HelperMethods {
 				break;
 			
 			if(temp.label != null && temp.label.equals(label)) {
-				String className = line.m.getClass().getName();
+				String mnemonic = line.m.mnemonic;
 				
-				if(className.equals("LCALL") || className.equals("LJMP"))
+				if(mnemonic.equals("LCALL") || mnemonic.equals("LJMP"))
 					return temp.address;
 				
 				int lineAddress = Integer.parseInt(line.address, 16) + line.m.size;
 				int labelAddress = Integer.parseInt(temp.address, 16);
 				int jump = labelAddress - lineAddress;
 				
-				if(className.equals("SJMP") && (jump < -128 || jump > 127))
+				if(mnemonic.equals("SJMP") && (jump < -128 || jump > 127))
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
 				//Not sure about jump range of AJMP.
-				else if(className.equals("AJMP") || className.equals("ACALL")) {
+				else if(mnemonic.equals("AJMP") || mnemonic.equals("ACALL")) {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
-						throw new Exception(String.format("Label address is not a part of the %s 2KB block.", className));
+						throw new Exception(String.format("Label address is not a part of the %s 2KB block.", mnemonic));
 					
 					String opcode = Integer.toBinaryString(jump);
 					opcode = ("00000000000" + opcode).substring(opcode.length());
-					opcode = Integer.toHexString(Integer.parseInt(opcode.substring(0, 3) + (className.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(3), 2));
+					opcode = Integer.toHexString(Integer.parseInt(opcode.substring(0, 3) + (mnemonic.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(3), 2));
 					
 					return ("0000" + opcode).substring(opcode.length()).toUpperCase();
 				}
@@ -375,7 +375,7 @@ class HelperMethods {
 				if(line.parsedLine == null) //Write to file until "END" directive.
 					return;
 				
-				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && !line.m.getClass().getName().equals("DB")) ? line.m.opcode : "", line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && line.m.mnemonic != null ? line.m.opcode : ""), line.rawLine));
 			}
 			
 			lstFile.flush();
