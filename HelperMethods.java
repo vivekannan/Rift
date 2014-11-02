@@ -8,6 +8,15 @@ import java.io.FileNotFoundException;
 
 class HelperMethods {
 	
+	/**
+	*	Reads hexcodes.txt and obtains the opcodes along with the proper regex
+	*	for the operands. 
+	*	
+	*	@param None
+	*	@return void
+	*	@throws FileNotFoundException - can't find hexcodes.txt
+	*	@throws IOException - can't open hexcodes.txt
+	*/
 	static void getOpcodes() {
 		
 		Object[] op;
@@ -26,13 +35,13 @@ class HelperMethods {
 					String.format("%2s", Integer.toHexString(i).toUpperCase()).replace(' ', '0'),
 				};
 				
-				if(Boo.opcodes.containsKey(tokens[0]))
-					Boo.opcodes.get(tokens[0]).add(op);
+				if(Rift.opcodes.containsKey(tokens[0]))
+					Rift.opcodes.get(tokens[0]).add(op);
 				
 				else {
 					temp = new ArrayList<Object[]>();
 					temp.add(op);
-					Boo.opcodes.put(tokens[0], temp);
+					Rift.opcodes.put(tokens[0], temp);
 				}
 			}
 			
@@ -40,11 +49,20 @@ class HelperMethods {
 		}
 		
 		catch(Exception e) {
-			System.out.println("Can't find hex codes! Exiting...");
+			System.out.println("Can't find hexcodes! Exiting...");
 			System.exit(0);
 		}
 	}
 	
+	/**
+	*	Reads symbols.txt and obtains the pre-defined symbols and their memory
+	*	addresses.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws FileNotFoundException - can't find symbols.txt
+	*	@throws IOException - can't open symbols.txt
+	*/
 	static void getSymbols() {
 		
 		String line;
@@ -56,7 +74,7 @@ class HelperMethods {
 			
 			while((line = symbolSource.readLine()) != null) {
 				tokens = line.split(" ");
-				Boo.symbols.put(tokens[0], tokens[1]);
+				Rift.symbols.put(tokens[0], tokens[1]);
 			}
 			
 			symbolSource.close();
@@ -69,48 +87,46 @@ class HelperMethods {
 	}
 	
 	/**
-	*	Reads lines using Boo.fileName as filename and stores the lines in Boo.lines.
+	*	Reads lines using Rift.fileName as filename and stores the lines in Rift.lines.
 	*	
 	*	@param None
 	*	@return void
-	*	@throws FileNotFoundException If given file is not found.
-	*	@throws IOException If file cannot be opened.
+	*	@throws FileNotFoundException - can't find the given file
+	*	@throws IOException - can't open the given file
 	*/
-	//TODO: None.
 	static void read() {
 		
 		String line;
 		BufferedReader asmSource;
 		
 		try {
-			asmSource = new BufferedReader(new FileReader(Boo.fileName));
+			asmSource = new BufferedReader(new FileReader(Rift.fileName));
 			
 			for(int i = 1; (line = asmSource.readLine()) != null; i++)
-				Boo.lines.add(new Line(line, i));
+				Rift.lines.add(new Line(line, i));
 			
 			asmSource.close();
 		}
 		
 		catch(FileNotFoundException e) {
-			System.out.println(Boo.fileName + " not found.");
+			System.out.println(Rift.fileName + " not found.");
 			System.exit(0);
 		}
 		
 		catch(IOException e) {
-			System.out.println(Boo.fileName + " cannot be opened/closed.");
+			System.out.println(Rift.fileName + " cannot be opened/closed.");
 			System.exit(0);
 		}
 	}
 	
 	/**
 	*	Parses the lines read by read(). Removes comments and excess whitespaces.
-	*	Parsing is terminated when "END" is encountered.
+	*	Parsing is terminated when "END" directive is encountered.
 	*	
 	*	@param None
 	*	@return void
 	*	@throws None
 	*/
-	//TODO: Support all the other directives (DB, EQU, BIT). Have seperate hashmap for directives.
 	static void parse() {
 		
 		int index;
@@ -119,7 +135,7 @@ class HelperMethods {
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
 		final Pattern EQUDIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"\\p{ASCII}+\")");
 		
-		for(Line temp : Boo.lines) {
+		for(Line temp : Rift.lines) {
 			line = temp.rawLine;
 			index = line.indexOf(';');
 			
@@ -129,6 +145,7 @@ class HelperMethods {
 			if(line.indexOf('\"') == -1)
 				line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 			
+			//Maintains the case of ascii data found within quotes.
 			else {
 				tokens = line.split("\"", 2);
 				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
@@ -144,11 +161,11 @@ class HelperMethods {
 				else if (EQUDIRECTIVE.matcher(line).matches()) {
 					tokens = line.split(" ");
 					
-					if(Boo.opcodes.containsKey(tokens[1]) || Boo.symbols.containsKey(tokens[1]) || Boo.directives.contains(tokens[1]))
+					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
 						temp.setError("Illegal symbol name.");
 					
 					else
-						Boo.symbols.put(tokens[1], tokens[2]);
+						Rift.symbols.put(tokens[1], tokens[2]);
 				}
 				
 				else
@@ -163,7 +180,7 @@ class HelperMethods {
 				line = line.substring(0, index);
 				
 				for(int i = 0; i < tokens.length; i++)
-					line += (Boo.symbols.containsKey(tokens[i]) ? Boo.symbols.get(tokens[i]) : tokens[i]) + ",";
+					line += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
 				
 				line = line.substring(0, line.length() - 1);
 			}
@@ -175,14 +192,23 @@ class HelperMethods {
 		}
 	}
 	
-	//TODO: Beautify.
+	/**
+	*	Tokenizes the parsed lines into mnemonics and operands. A Mnemonic obj
+	*	is created for every line with a mnemonic in it. The validate method
+	*	tries to amtch the given operands with the regex as defined in hexcodes.txt.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws FileNotFoundException If given file is not found.
+	*	@throws IOException If file cannot be opened.
+	*/
 	static void tokenize() {
 		
 		String line;
 		String[] tokens;
 		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
 		
-		for(Line temp : Boo.lines) {
+		for(Line temp : Rift.lines) {
 			line = temp.parsedLine;
 			
 			if(line.equals("END"))
@@ -194,7 +220,7 @@ class HelperMethods {
 					temp.label = tokens[0];
 					line = tokens[1];
 					
-					if(Boo.opcodes.containsKey(temp.label) || Boo.symbols.containsKey(temp.label) || Boo.directives.contains(temp.label))
+					if(Rift.opcodes.containsKey(temp.label) || Rift.symbols.containsKey(temp.label) || Rift.directives.contains(temp.label))
 						temp.setError("Illegal label name.");
 				}
 				
@@ -218,23 +244,23 @@ class HelperMethods {
 	}
 	
 	/**
-	*	Prints errors that were set by other methods. Returns true if errors are present.
+	*	Prints errors that were set by other methods. Program stops if errors are
+	*	found.
 	*
 	*	@params None
-	*	@return boolean
+	*	@return void
 	*	@throws None
 	*/
-	//TODO: None.
 	static void printErrors() {
 		
 		boolean errors = false;
 		
-		for(Line temp : Boo.lines) {
+		for(Line temp : Rift.lines) {
 			if(!temp.errorStatements.isEmpty()) {
 				errors = true;
 				
 				for(String error : temp.errorStatements)
-					System.out.println(Boo.fileName + "::" + error);
+					System.out.println(Rift.fileName + "::" + error);
 			}
 		}
 		
@@ -249,13 +275,12 @@ class HelperMethods {
 	*	@return void
 	*	@throws None
 	*/
-	//TODO: None.
 	static void allocROMAddr() {
 		
 		int start = 0x0000;
 		
-		for(Line temp : Boo.lines) {
-			if(temp.parsedLine == null) //Allocate address for instructions until "END" directive.
+		for(Line temp : Rift.lines) {
+			if(temp.parsedLine == null)
 				return;
 			
 			if(temp.org != null)
@@ -275,15 +300,23 @@ class HelperMethods {
 				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 			
 			else
-				temp.address = ""; //Mnemonic devoid statements do not get any address.
+				temp.address = "";
 		}
 	}
 	
+	/**
+	*	Replaces the labels in the opcode with proper hex values.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws Exception - label cannot be found in the asm source
+	*	@throws Exception - jump range exceeds limit for any label
+	*/
 	static void deLabelize() {
 		
 		String[] tokens;
 		
-		for(Line temp : Boo.lines) {
+		for(Line temp : Rift.lines) {
 			if(temp.parsedLine.equals("END"))
 				return;
 			
@@ -309,16 +342,15 @@ class HelperMethods {
 	/**
 	*	Calculates the address for labels. Depending upon the Mnemonics, the address maybe relative or absolute.
 	*	
-	*	@param String label The label given as a operand for which the address must be calculate.
-	*	@param Line line The line object which has the label as an operand.
+	*	@param String label - The label given as a operand for which the address must be calculate.
+	*	@param Line line - The line object which has the label as an operand.
 	*	@return A String object representing the address.
-	*	@throws Exception When the given label cannot be found in the asm source.
-	*	@throws Exception When jump range for SJMP exceeds limit.
+	*	@throws Exception - label cannot be found in the asm source
+	*	@throws Exception - jump range exceeds limit
 	*/
-	//TODO: Beautify.
 	static String calcAddr(String label, Line line) throws Exception {
 		
-		for(Line temp : Boo.lines) {
+		for(Line temp : Rift.lines) {
 			if(temp.parsedLine.equals("END"))
 				break;
 			
@@ -335,7 +367,6 @@ class HelperMethods {
 				if(mnemonic.equals("SJMP") && (jump < -128 || jump > 127))
 					throw new Exception(String.format("Given jump range of %s exceeds limit for SJMP (-128 to 127)", jump));
 				
-				//Not sure about jump range of AJMP.
 				else if(mnemonic.equals("AJMP") || mnemonic.equals("ACALL")) {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
 						throw new Exception(String.format("Label address is not a part of the %s 2KB block.", mnemonic));
@@ -357,22 +388,20 @@ class HelperMethods {
 	}
 
 	/**
-	*	Creates a file with basename of Boo.fileName with extension ".lst".
-	*	The lst content is then written to the file. If an exception occurs, displays a message.
+	*	Creates a list file with basename of Rift.fileName.
 	*	
 	*	@param None
 	*	@return void
-	*	@throws Exception If error in file creation.
+	*	@throws Exception - error in file creation
 	*/
-	//TODO: None.
 	static void writeToFile() {
 		
 		try {
-			int dotIndex = Boo.fileName.lastIndexOf(".");
-			PrintWriter lstFile = new PrintWriter(Boo.fileName.substring(0, dotIndex > 0 ? dotIndex : Boo.fileName.length()) + ".lst", "UTF-8");
+			int dotIndex = Rift.fileName.lastIndexOf(".");
+			PrintWriter lstFile = new PrintWriter(Rift.fileName.substring(0, dotIndex > 0 ? dotIndex : Rift.fileName.length()) + ".lst", "UTF-8");
 			
-			for(Line line : Boo.lines) {
-				if(line.parsedLine == null) //Write to file until "END" directive.
+			for(Line line : Rift.lines) {
+				if(line.parsedLine == null)
 					return;
 				
 				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && line.m.mnemonic != null ? line.m.opcode : ""), line.rawLine));
@@ -387,15 +416,22 @@ class HelperMethods {
 		}
 	}
 	
+	/**
+	*	Creates a hex file with basename of Rift.fileName. 
+	*	
+	*	@param None
+	*	@return void
+	*	@throws Exception - error in file creation
+	*/
 	static void createHex() {
 		
 		try {
 			int checksum;
 			String temp;
-			int dotIndex = Boo.fileName.lastIndexOf(".");
-			PrintWriter hexFile = new PrintWriter(Boo.fileName.substring(0, dotIndex > 0 ? dotIndex : Boo.fileName.length()) + ".hex", "UTF-8");
+			int dotIndex = Rift.fileName.lastIndexOf(".");
+			PrintWriter hexFile = new PrintWriter(Rift.fileName.substring(0, dotIndex > 0 ? dotIndex : Rift.fileName.length()) + ".hex", "UTF-8");
 			
-			for(Line line : Boo.lines) {
+			for(Line line : Rift.lines) {
 				if(line.parsedLine == null)
 					break;
 				

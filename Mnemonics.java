@@ -13,7 +13,7 @@ class Mnemonics {
 	
 	Mnemonics(String mnemonic) throws Exception {
 		
-		if(!Boo.opcodes.containsKey(mnemonic))
+		if(!Rift.opcodes.containsKey(mnemonic))
 			throw new Exception("Unidentified Mnemonic: " + mnemonic);
 		
 		this.mnemonic = mnemonic;
@@ -76,7 +76,7 @@ class Mnemonics {
 		
 		Matcher match;
 		String operand;
-		ArrayList<Object[]> op = Boo.opcodes.get(this.mnemonic);
+		ArrayList<Object[]> op = Rift.opcodes.get(this.mnemonic);
 		
 		for(Object[] o : op) {
 			match = ((Pattern) o[0]).matcher(operands);
@@ -88,8 +88,8 @@ class Mnemonics {
 				for(int i = 1; i <= match.groupCount(); i++) {
 					operand = match.group(i);
 					
-					if(Boo.symbols.containsKey(operand))
-						this.opcode += Boo.symbols.get(operand);
+					if(Rift.symbols.containsKey(operand))
+						this.opcode += Rift.symbols.get(operand);
 					
 					else if(LABEL.matcher(operand).matches())
 						this.opcode += ":" + operand;

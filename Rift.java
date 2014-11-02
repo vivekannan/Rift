@@ -26,7 +26,7 @@ class Line {
 	}
 }
 
-class Boo {
+class Rift {
 	
 	static String fileName;
 	static ArrayList<Line> lines = new ArrayList<Line>();
