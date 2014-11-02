@@ -36,7 +36,7 @@ class Rift {
 	
 	public static void main(String args[]) {
 		
-		if(args.length > 0) {
+		if(args.length == 1) {
 			fileName = args[0];
 			
 			HelperMethods.getOpcodes();
@@ -50,9 +50,12 @@ class Rift {
 			HelperMethods.printErrors();
 			HelperMethods.deLabelize();
 			HelperMethods.printErrors();
-			HelperMethods.writeToFile();
+			HelperMethods.createLst();
 			HelperMethods.createHex();
 		}
+		
+		else if(args.length > 1)
+			System.out.println("Rift expects a single argument (asm source).");
 		
 		else
 			System.out.println("File name not given.");

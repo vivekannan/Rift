@@ -394,7 +394,7 @@ class HelperMethods {
 	*	@return void
 	*	@throws Exception - error in file creation
 	*/
-	static void writeToFile() {
+	static void createLst() {
 		
 		try {
 			int dotIndex = Rift.fileName.lastIndexOf(".");

@@ -163,7 +163,7 @@ AJMP ([A-Z][A-Z0-9]*)
 MOV C,([01]+B|\d+D?|\d[A-F0-9]*H)
 INC DPTR
 MUL AB
-*RESERVED* 
+NOP 
 MOV @R0,([01]+B|\d+D?|\d[A-F0-9]*H)
 MOV @R1,([01]+B|\d+D?|\d[A-F0-9]*H)
 MOV R0,([01]+B|\d+D?|\d[A-F0-9]*H)
