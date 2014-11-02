@@ -111,15 +111,20 @@ class DB extends Mnemonics {
 	boolean validate(String operands) throws Exception {
 		
 		Matcher match;
-		final Pattern p = Pattern.compile("(?:(?:-?[01]+B|-?\\d+D?|-?\\d[0-9A-F]*H|\"\\p{ASCII}+\") *(?:, *|$))+");
+		final Pattern p = Pattern.compile("(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H) *(?:, *|$))+|\"\\p{ASCII}+\")");
 		
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
 		
-		String[] tokens = operands.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$) *");
+		if(operands.charAt(0) != '\"') {
+			String[] tokens = operands.split(",");
+			
+			for(String data : tokens)
+				this.opcode += this.hexify(data);
+		}
 		
-		for(String data : tokens)
-			this.opcode += this.hexify(data);
+		else
+			this.opcode = this.asciify(operands);
 		
 		this.size = this.opcode.length() / 2;
 		

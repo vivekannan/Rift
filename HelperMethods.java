@@ -174,9 +174,9 @@ class HelperMethods {
 				line = "";
 			}
 			
-			else {
+			else if(!line.startsWith("DB ")) {
 				index = line.lastIndexOf(" ") + 1;
-				tokens = line.substring(index).split(",");   //Splits data such as ",,". Big bug.
+				tokens = line.substring(index).split(",");
 				line = line.substring(0, index);
 				
 				for(int i = 0; i < tokens.length; i++)
@@ -404,7 +404,7 @@ class HelperMethods {
 				if(line.parsedLine == null)
 					return;
 				
-				lstFile.println(String.format("%-8d%-6s%-8s%s", line.lineNumber, line.address, (line.m != null && line.m.mnemonic != null ? line.m.opcode : ""), line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-7s %s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
 			}
 			
 			lstFile.flush();
