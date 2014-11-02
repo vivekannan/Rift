@@ -7,15 +7,15 @@ Rift is an Intel 8051/52 assembler written in Java. Rift is built with the book
   2. Errors, if any, are printed on the terminal for rectification.
   3. If no errors are found, a list and a hex file are created.
 
-#Mnemonics
+##Mnemonics
   The entire 8051/52 instruction set is supported. The error checking is
 through. Everything from unidentified Mnemonic to invalid operands to incompatible
 data/address size to improper jump ranges are reported.
 
-#Directives
+##Directives
   Supported directives include ORG, END, DB, BIT & EQU.
 
-#Usage
+##Usage
   Compile with
 
     javac Rift.java HelperMethods.java
@@ -24,12 +24,12 @@ Run with
 
     java Rift [filename/path]
 
-#TODO
+##TODO
   1. Make error statements more specific.
   2. Implement a full featured emulator.
   3. GUI.
 
-#Note
+##Note
   1. Rift considers the source file to be CASE INSENSITIVE (except for ascii data).
   2. All hex values MUST be suffixed with "h" and binary values MUST be suffixed with "b"; values without suffix are assumed to be decimal. This may lead to confusing errors. All hex values with a intial alphabet MUST be prefixed with 0 (As per Mazidi).
   3. The EQU/BIT directives have a slightly different syntax which is not in sync with Mazidi.
