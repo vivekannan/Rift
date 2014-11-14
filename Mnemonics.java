@@ -128,8 +128,8 @@ class DB extends Mnemonics {
 		
 		this.size = this.opcode.length() / 2;
 		
-		if(this.size > 255)
-			throw new Exception("DB can handle only 255 bytes of data.");
+		if(this.size > 16)
+			throw new Exception("DB can handle only 16 bytes of data.");
 		
 		return true;
 	}

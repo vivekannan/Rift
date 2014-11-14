@@ -31,7 +31,7 @@ Run with
 
 ##Note
   1. Rift considers the source file to be CASE INSENSITIVE (except for ascii data).
-  2. All hex values MUST be suffixed with "h" and binary values MUST be suffixed with "b"; values without suffix are assumed to be decimal. This may lead to confusing errors. All hex values with a intial alphabet MUST be prefixed with 0 (As per Mazidi).
+  2. All hex values MUST be suffixed with "h" and binary values MUST be suffixed with "b"; values without suffix are assumed to be decimal. This may lead to confusing errors. All hex values with a initial alphabet MUST be prefixed with 0 (As per Mazidi).
   3. The EQU/BIT directives have a slightly different syntax which is not in sync with Mazidi.
     * Mazidi ---> Symbol EQU/BIT Value
     * Rift   ---> EQU/BIT Symbol Value
