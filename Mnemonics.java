@@ -115,9 +115,7 @@ class DB extends Mnemonics {
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
 		
-		String[] tokens = operands.split(",");
-		
-		for(String data : tokens)
+		for(String data : operands.split(","))
 			this.opcode += this.hexify(data);
 		
 		this.size = this.opcode.length() / 2;
