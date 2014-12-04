@@ -37,4 +37,4 @@ Run with
     * Rift   ---> EQU/BIT Symbol Value
   4. Rift considers EQU and BIT to be identical in every way.
   5. The reserved opcode (A5) is considered to be equivalent to NOP.
-  6. A single DB can at the most define 255 bytes. DB either handles a list of comma seperated values or a single string.
+  6. A single DB can at the most define 16 bytes. DB either handles a list of comma seperated values or a single string.

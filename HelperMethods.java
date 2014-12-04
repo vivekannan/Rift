@@ -103,7 +103,7 @@ class HelperMethods {
 			asmSource = new BufferedReader(new FileReader(Rift.fileName));
 			
 			for(int i = 1; (line = asmSource.readLine()) != null; i++)
-				Rift.lines.add(new Line(line, i));
+				Rift.lines.add(new Line(line));
 			
 			asmSource.close();
 		}
@@ -130,64 +130,65 @@ class HelperMethods {
 	static void parse() {
 		
 		int index;
-		String line;
+		String temp;
 		String[] tokens;
 		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
 		final Pattern EQUDIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"\\p{ASCII}+\")");
 		
-		for(Line temp : Rift.lines) {
-			line = temp.rawLine;
-			index = line.indexOf(';');
+		for(Line line : Rift.lines) {
+			temp = line.rawLine;
+			index = temp.indexOf(';');
 			
+			//Remove all characters after first ";" (inclusive).
 			if(index != -1)
-				line = line.substring(0, index);
-			
-			if(line.indexOf('\"') == -1)
-				line = line.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+				temp = temp.substring(0, index);
 			
 			//Maintains the case of ascii data found within quotes.
-			else {
-				tokens = line.split("\"", 2);
+			if(temp.indexOf('\"') != -1) {
+				tokens = temp.split("\"", 2);
 				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
-				line = (tokens[0] + "\"" + tokens[1]).trim();
+				temp = (tokens[0] + "\"" + tokens[1]).trim();
 			}
 			
-			if(line.startsWith("BIT ") || line.startsWith("EQU ") || line.startsWith("ORG ")) {
-				if(ORGDIRECTIVE.matcher(line).matches()) {
-					tokens = line.split(" ");
-					temp.org = tokens[1].replace("H", "");
+			else
+				temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+			
+			if(temp.startsWith("BIT ") || temp.startsWith("EQU ") || temp.startsWith("ORG ")) {
+				if(ORGDIRECTIVE.matcher(temp).matches()) {
+					tokens = temp.split(" ");
+					line.address = tokens[1].replace("H", "");
 				}
 				
-				else if (EQUDIRECTIVE.matcher(line).matches()) {
-					tokens = line.split(" ");
+				else if (EQUDIRECTIVE.matcher(temp).matches()) {
+					tokens = temp.split(" ");
 					
 					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
-						temp.setError("Illegal symbol name.");
+						line.setError("Illegal symbol name.");
 					
 					else
 						Rift.symbols.put(tokens[1], tokens[2]);
 				}
 				
 				else
-					temp.setError("Invalid operands for " + line.split(" ")[0] + " directive.");
+					line.setError("Invalid operands for " + temp.split(" ")[0] + " directive.");
 				
-				line = "";
+				temp = "";
 			}
 			
-			else if(!line.startsWith("DB ")) {
-				index = line.lastIndexOf(" ") + 1;
-				tokens = line.substring(index).split(",");
-				line = line.substring(0, index);
+			else if(!temp.startsWith("DB ")) {
+				index = temp.lastIndexOf(" ") + 1;
+				tokens = temp.substring(index).split(",");
+				temp = temp.substring(0, index);
 				
 				for(int i = 0; i < tokens.length; i++)
-					line += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
+					temp += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
 				
-				line = line.substring(0, line.length() - 1);
+				temp = temp.substring(0, temp.length() - 1);
 			}
 			
-			temp.parsedLine = line;
+			line.parsedLine = temp;
 			
-			if(line.equals("END"))
+			if(temp.equals("END"))
 				return;
 		}
 	}
@@ -204,40 +205,40 @@ class HelperMethods {
 	*/
 	static void tokenize() {
 		
-		String line;
+		String temp;
 		String[] tokens;
 		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
 		
-		for(Line temp : Rift.lines) {
-			line = temp.parsedLine;
+		for(Line line : Rift.lines) {
+			temp = line.parsedLine;
 			
-			if(line.equals("END"))
+			if(temp.equals("END"))
 				return;
 			
-			if(line.length() > 0) {
-				if(LABEL.matcher(line).matches()) {
-					tokens = line.split(": ?", 2);
-					temp.label = tokens[0];
-					line = tokens[1];
+			if(temp.length() > 0) {
+				if(LABEL.matcher(temp).matches()) {
+					tokens = temp.split(": ?", 2);
+					line.label = tokens[0];
+					temp = tokens[1];
 					
-					if(Rift.opcodes.containsKey(temp.label) || Rift.symbols.containsKey(temp.label) || Rift.directives.contains(temp.label))
-						temp.setError("Illegal label name.");
+					if(Rift.opcodes.containsKey(line.label) || Rift.symbols.containsKey(line.label) || Rift.directives.contains(line.label))
+						line.setError("Illegal label name.");
 				}
 				
-				if(line.equals(""))
+				if(temp.equals(""))
 					continue;
 				
-				tokens = line.split(" ", 2);
+				tokens = temp.split(" ", 2);
 				
 				try {
-					temp.m = (tokens[0].equals("DB")) ? new DB() : new Mnemonics(tokens[0]);
+					line.m = (tokens[0].equals("DB")) ? new DB() : new Mnemonics(tokens[0]);
 					
-					if(!temp.m.validate(tokens.length == 2 ? tokens[1] : ""))
-						temp.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
+					if(!line.m.validate(tokens.length == 2 ? tokens[1] : ""))
+						line.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
 				}
 				
 				catch(Exception e) {
-					temp.setError(e.getMessage());
+					line.setError(e.getMessage());
 				}
 			}
 		}
@@ -255,12 +256,15 @@ class HelperMethods {
 		
 		boolean errors = false;
 		
-		for(Line temp : Rift.lines) {
-			if(!temp.errorStatements.isEmpty()) {
+		for(int i = 0; i < Rift.lines.size(); i++) {
+			
+			Line line = Rift.lines.get(i);
+			
+			if(!line.errorStatements.isEmpty()) {
 				errors = true;
 				
-				for(String error : temp.errorStatements)
-					System.out.println(Rift.fileName + "::" + error);
+				for(String error : line.errorStatements)
+					System.out.println(Rift.fileName + "::" + (i + 1) + error);
 			}
 		}
 		
@@ -279,28 +283,27 @@ class HelperMethods {
 		
 		int start = 0x0000;
 		
-		for(Line temp : Rift.lines) {
-			if(temp.parsedLine == null)
+		for(Line line : Rift.lines) {
+			if(line.parsedLine == null)
 				return;
 			
-			if(temp.org != null)
-				start = Integer.parseInt(temp.org, 16);
+			if(line.address != null) {
+				start = Integer.parseInt(line.address, 16);
+				line.address = null;
+			}
 			
-			if(temp.m != null) {
-				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
-				start += temp.m.size;
+			if(line.m != null) {
+				line.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
+				start += line.m.size;
 				
 				if(start > 0xFFFF) {
-					temp.setError("Internal ROM full.");
+					line.setError("Internal ROM full.");
 					return;
 				}
 			}
 			
-			else if(temp.label != null)
-				temp.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
-			
-			else
-				temp.address = "";
+			else if(line.label != null)
+				line.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 		}
 	}
 	
@@ -316,23 +319,23 @@ class HelperMethods {
 		
 		String[] tokens;
 		
-		for(Line temp : Rift.lines) {
-			if(temp.parsedLine.equals("END"))
+		for(Line line : Rift.lines) {
+			if(line.parsedLine.equals("END"))
 				return;
 			
-			if(temp.m != null) {
-				if(temp.m.opcode.indexOf(":") != -1) {
-					tokens = temp.m.opcode.split(":");
+			if(line.m != null) {
+				if(line.m.opcode.indexOf(":") != -1) {
+					tokens = line.m.opcode.split(":");
 					
 					try {
-						if(temp.m.getClass().getName().equals("AJMP") || temp.m.getClass().getName().equals("ACALL"))
-							temp.m.opcode = HelperMethods.calcAddr(tokens[1], temp);
+						if(line.m.getClass().getName().equals("AJMP") || line.m.getClass().getName().equals("ACALL"))
+							line.m.opcode = HelperMethods.calcAddr(tokens[1], line);
 						else
-							temp.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], temp);
+							line.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], line);
 					}
 					
 					catch(Exception e) {
-						temp.setError(e.getMessage());
+						line.setError(e.getMessage());
 					}
 				}
 			}
@@ -348,20 +351,20 @@ class HelperMethods {
 	*	@throws Exception - label cannot be found in the asm source
 	*	@throws Exception - jump range exceeds limit
 	*/
-	static String calcAddr(String label, Line line) throws Exception {
+	static String calcAddr(String label, Line l) throws Exception {
 		
-		for(Line temp : Rift.lines) {
-			if(temp.parsedLine.equals("END"))
+		for(Line line : Rift.lines) {
+			if(line.parsedLine.equals("END"))
 				break;
 			
-			if(temp.label != null && temp.label.equals(label)) {
-				String mnemonic = line.m.mnemonic;
+			if(line.label != null && line.label.equals(label)) {
+				String mnemonic = l.m.mnemonic;
 				
 				if(mnemonic.equals("LCALL") || mnemonic.equals("LJMP"))
-					return temp.address;
+					return line.address;
 				
-				int lineAddress = Integer.parseInt(line.address, 16) + line.m.size;
-				int labelAddress = Integer.parseInt(temp.address, 16);
+				int lineAddress = Integer.parseInt(l.address, 16) + l.m.size;
+				int labelAddress = Integer.parseInt(line.address, 16);
 				int jump = labelAddress - lineAddress;
 				
 				if(mnemonic.equals("SJMP") && (jump < -128 || jump > 127))
@@ -400,11 +403,13 @@ class HelperMethods {
 			int dotIndex = Rift.fileName.lastIndexOf(".");
 			PrintWriter lstFile = new PrintWriter(Rift.fileName.substring(0, dotIndex > 0 ? dotIndex : Rift.fileName.length()) + ".lst", "UTF-8");
 			
-			for(Line line : Rift.lines) {
+			for(int i = 0; i < Rift.lines.size(); i++) {
+				Line line = Rift.lines.get(i);
+				
 				if(line.parsedLine == null)
 					return;
 				
-				lstFile.println(String.format("%-8d%-6s%-7s %s", line.lineNumber, line.address, line.m != null ? line.m.opcode : "", line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-6s %s", i + 1, line.address != null ? line.address : "", line.m != null ? line.m.opcode : "", line.rawLine));
 			}
 			
 			lstFile.flush();
@@ -438,7 +443,7 @@ class HelperMethods {
 				checksum = 0;
 				
 				if(line.m != null) {
-					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.opcode.length() / 2), line.address, line.m.opcode).replace(' ', '0');
+					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.opcode.length() / 2), line.address != null ? line.address : "", line.m.opcode).replace(' ', '0');
 					
 					for(int i = 0; i < temp.length() / 2; i++)
 						checksum += Integer.parseInt(temp.substring(2 * i, 2 * (i + 1)), 16);

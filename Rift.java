@@ -5,24 +5,21 @@ import java.util.ArrayList;
 
 class Line {
 	
-	String org;
 	Mnemonics m;
 	String label;
-	int lineNumber;
 	String address;
 	String rawLine;
 	String parsedLine;
 	ArrayList<String> errorStatements = new ArrayList<String>();
 	
-	Line(String l, int ln) {
+	Line(String l) {
 		
 		this.rawLine = l;
-		this.lineNumber = ln;
 	}
 	
 	void setError(String error) {
 		
-		this.errorStatements.add(String.format("%d: %s\n%s", this.lineNumber, error, this.rawLine));
+		this.errorStatements.add(String.format(": %s\n%s", error, this.rawLine));
 	}
 }
 
