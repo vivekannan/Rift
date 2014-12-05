@@ -19,15 +19,15 @@ class Mnemonics {
 		this.mnemonic = mnemonic;
 	}
 	
-	String asciify(String s) throws Exception {
+	static String asciify(String s) {
 		
 		String temp = "";
-		s = s.substring(1, s.length() - 1);
+		s = s.substring(0, s.length() - 1);
 		
 		for(int i = 0; i < s.length(); i++)
 			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
 		
-		return temp;
+		return String.format("\"%S\"", temp);
 	}
 	
 	String hexify(String s) throws Exception {
@@ -35,13 +35,11 @@ class Mnemonics {
 		int temp;
 		
 		try {
-			if(s.charAt(0) == '\"') {
-				s = this.asciify(s);
-				
+			if(s.charAt(0) == '"') {
 				if(this.mnemonic == null)
-					return (s.length() % 2 == 0 ? s : "0" + s).toUpperCase();
+					return s.substring(1, s.length() - 1);
 				
-				temp = Integer.parseInt(s, 16);
+				temp = Integer.parseInt(s.substring(1, s.length() - 1), 16);
 			}
 			
 			else if(s.charAt(s.length() - 1) == 'H')
@@ -65,6 +63,7 @@ class Mnemonics {
 		}
 		
 		catch(Exception e) {
+			System.out.println(e);
 			if(this.mnemonic == null)
 				throw new Exception("Directive DB expects 8-bit data or String.");
 			
@@ -88,10 +87,7 @@ class Mnemonics {
 				for(int i = 1; i <= match.groupCount(); i++) {
 					operand = match.group(i);
 					
-					if(Rift.symbols.containsKey(operand))
-						this.opcode += Rift.symbols.get(operand);
-					
-					else if(LABEL.matcher(operand).matches())
+					if(LABEL.matcher(operand).matches())
 						this.opcode += ":" + operand;
 					
 					else
@@ -108,7 +104,7 @@ class Mnemonics {
 
 class DB extends Mnemonics {
 	
-	static final Pattern p = Pattern.compile("(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H) *(?:, *|$))+|\"\\p{ASCII}+\")");
+	static final Pattern p = Pattern.compile("(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)(?:,|$))+|\"[0-9A-Z]+\")");
 	
 	boolean validate(String operands) throws Exception {
 		

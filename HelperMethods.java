@@ -143,11 +143,11 @@ class HelperMethods {
 			if(index != -1)
 				temp = temp.substring(0, index);
 			
-			//Maintains the case of ascii data found within quotes.
+			//Converts data within quotes into ascii equivalent within quotes.
 			if(temp.indexOf('\"') != -1) {
 				tokens = temp.split("\"", 2);
 				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
-				temp = (tokens[0] + "\"" + tokens[1]).trim();
+				temp = (tokens[0] + Mnemonics.asciify(tokens[1])).trim();
 			}
 			
 			else
