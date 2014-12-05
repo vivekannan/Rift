@@ -18,7 +18,7 @@ data/address size to improper jump ranges are reported.
 ##Usage
   Compile with
 
-    javac Rift.java HelperMethods.java
+    javac Rift.java
 
 Run with
 
