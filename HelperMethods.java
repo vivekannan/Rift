@@ -208,7 +208,7 @@ class HelperMethods {
 		
 		String temp;
 		String[] tokens;
-		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]*:.*$");
+		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]* ?:.*$");
 		
 		for(Line line : Rift.lines) {
 			temp = line.parsedLine;
@@ -219,7 +219,7 @@ class HelperMethods {
 			if(temp.length() > 0) {
 				if(LABEL.matcher(temp).matches()) {
 					tokens = temp.split(": ?", 2);
-					line.label = tokens[0];
+					line.label = tokens[0].trim();
 					temp = tokens[1];
 					
 					if(Rift.opcodes.containsKey(line.label) || Rift.symbols.containsKey(line.label) || Rift.directives.contains(line.label))
