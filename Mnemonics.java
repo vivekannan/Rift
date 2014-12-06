@@ -22,9 +22,8 @@ class Mnemonics {
 	static String asciify(String s) {
 		
 		String temp = "";
-		s = s.substring(0, s.length() - 1);
 		
-		for(int i = 0; i < s.length(); i++)
+		for(int i = 1; i < s.length() - 1; i++)
 			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
 		
 		return String.format("\"%S\"", temp);

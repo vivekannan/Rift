@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.FileNotFoundException;
 
@@ -129,11 +130,13 @@ class HelperMethods {
 	*/
 	static void parse() {
 		
+		Matcher m;
 		int index;
 		String temp;
 		String[] tokens;
-		final Pattern ORGDIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
-		final Pattern EQUDIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"\\p{ASCII}+\")");
+		final Pattern ASCII_DATA = Pattern.compile("\"\\p{ASCII}+?\"");
+		final Pattern ORG_DIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
+		final Pattern EQU_DIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"[0-9A-F]+\")");
 		
 		for(Line line : Rift.lines) {
 			temp = line.rawLine;
@@ -143,23 +146,21 @@ class HelperMethods {
 			if(index != -1)
 				temp = temp.substring(0, index);
 			
-			//Converts data within quotes into ascii equivalent within quotes.
-			if(temp.indexOf('\"') != -1) {
-				tokens = temp.split("\"", 2);
-				tokens[0] = tokens[0].replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
-				temp = (tokens[0] + Mnemonics.asciify(tokens[1])).trim();
-			}
+			m = ASCII_DATA.matcher(temp);
 			
-			else
-				temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+			//Match ascii data within quotes and convert to hex.
+			while(m.find())
+				temp = temp.replace(m.group(), Mnemonics.asciify(m.group()));
+			
+			temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 			
 			if(temp.startsWith("BIT ") || temp.startsWith("EQU ") || temp.startsWith("ORG ")) {
-				if(ORGDIRECTIVE.matcher(temp).matches()) {
+				if(ORG_DIRECTIVE.matcher(temp).matches()) {
 					tokens = temp.split(" ");
 					line.address = tokens[1].replace("H", "");
 				}
 				
-				else if (EQUDIRECTIVE.matcher(temp).matches()) {
+				else if (EQU_DIRECTIVE.matcher(temp).matches()) {
 					tokens = temp.split(" ");
 					
 					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
