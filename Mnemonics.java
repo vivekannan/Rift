@@ -103,7 +103,7 @@ class Mnemonics {
 
 class DB extends Mnemonics {
 	
-	static final Pattern p = Pattern.compile("(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)(?:,|$))+|\"[0-9A-Z]+\")");
+	static final Pattern p = Pattern.compile("(?:(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H))|\"[0-9A-Z]+\")(?:,|$))+");
 	
 	boolean validate(String operands) throws Exception {
 		
@@ -116,7 +116,7 @@ class DB extends Mnemonics {
 		this.size = this.opcode.length() / 2;
 		
 		if(this.size > 16)
-			throw new Exception("DB can handle only 16 bytes of data.");
+			throw new Exception(String.format("DB can handle only 16 bytes of data. Given %d bytes.", this.size));
 		
 		return true;
 	}
