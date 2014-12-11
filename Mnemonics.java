@@ -19,16 +19,6 @@ class Mnemonics {
 		this.mnemonic = mnemonic;
 	}
 	
-	static String asciify(String s) {
-		
-		String temp = "";
-		
-		for(int i = 1; i < s.length() - 1; i++)
-			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
-		
-		return String.format("\"%S\"", temp);
-	}
-	
 	String hexify(String s) throws Exception {
 		
 		int temp;
@@ -50,6 +40,7 @@ class Mnemonics {
 			else
 				temp = Integer.parseInt(s.replace("D", ""));
 			
+			//If number is negative, add shift value to create two complement value.
 			if(temp < 0)
 				temp += temp > -255 ? 256 : 65536;
 			
@@ -62,7 +53,7 @@ class Mnemonics {
 		}
 		
 		catch(Exception e) {
-			System.out.println(e);
+			
 			if(this.mnemonic == null)
 				throw new Exception("Directive DB expects 8-bit data or String.");
 			
@@ -70,6 +61,14 @@ class Mnemonics {
 		}
 	}
 	
+	/**
+	*	Receives the operands for a particular Mnemonic and tries to match the
+	*	operands with the predefined regex given in hexcodes.txt.
+	*	
+	*	@param String operands - The operands parsed from the statement.
+	*	@return boolean - True, if operands are proper else false.
+	*	@throws Exception - Passes exception thrown by hexify().
+	*/
 	boolean validate(String operands) throws Exception {
 		
 		Matcher match;
@@ -103,12 +102,14 @@ class Mnemonics {
 
 class DB extends Mnemonics {
 	
-	static final Pattern p = Pattern.compile("(?:(?:(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H))|\"[0-9A-Z]+\")(?:,|$))+");
+	static final Pattern p = Pattern.compile("(?:(?:(?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H))|#?\"[0-9A-Z]+\")(?:,|$))+");
 	
 	boolean validate(String operands) throws Exception {
 		
 		if(!p.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
+		
+		operands = operands.replace("#", "");
 		
 		for(String data : operands.split(","))
 			this.opcode += this.hexify(data);

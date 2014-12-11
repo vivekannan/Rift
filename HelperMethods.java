@@ -121,6 +121,24 @@ class HelperMethods {
 	}
 	
 	/**
+	*	Converts the characters in the given string to equivalent ascii value.
+	*	The string is assumed to be double quoted properly.
+	*	
+	*	@param String s - The string to be converted.
+	*	@return String - The ascii equivalent of the given string.
+	*	@throws None
+	*/
+	static String asciify(String s) {
+		
+		String temp = "";
+		
+		for(int i = 1; i < s.length() - 1; i++)
+			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
+		
+		return String.format("\"%S\"", temp);
+	}
+	
+	/**
 	*	Parses the lines read by read(). Removes comments and excess whitespaces.
 	*	Parsing is terminated when "END" directive is encountered.
 	*	
@@ -130,8 +148,8 @@ class HelperMethods {
 	*/
 	static void parse() {
 		
-		Matcher m;
 		int index;
+		Matcher m;
 		String temp;
 		String[] tokens;
 		final Pattern ASCII_DATA = Pattern.compile("\"\\p{ASCII}+?\"");
@@ -150,9 +168,20 @@ class HelperMethods {
 			
 			//Match ascii data within quotes and convert to hex.
 			while(m.find())
-				temp = temp.replace(m.group(), Mnemonics.asciify(m.group()));
+				temp = temp.replace(m.group(), HelperMethods.asciify(m.group()));
 			
+			//Remove excessive whitespaces and convert statement to standard form.
 			temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
+			
+			//Replace all symbols with predefined symbols.
+			index = temp.lastIndexOf(" ") + 1;
+			tokens = temp.substring(index).split(",");
+			temp = temp.substring(0, index);
+			
+			for(int i = 0; i < tokens.length; i++)
+				temp += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
+			
+			temp = temp.substring(0, temp.length() - 1);
 			
 			if(temp.startsWith("BIT ") || temp.startsWith("EQU ") || temp.startsWith("ORG ")) {
 				if(ORG_DIRECTIVE.matcher(temp).matches()) {
@@ -164,7 +193,7 @@ class HelperMethods {
 					tokens = temp.split(" ");
 					
 					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
-						line.setError("Illegal symbol name.");
+						line.setError("Symbol name already defined or is a Mnemonic or Directive");
 					
 					else
 						Rift.symbols.put(tokens[1], tokens[2]);
@@ -174,17 +203,6 @@ class HelperMethods {
 					line.setError("Invalid operands for " + temp.split(" ")[0] + " directive.");
 				
 				temp = "";
-			}
-			
-			else if(!temp.startsWith("DB ")) {
-				index = temp.lastIndexOf(" ") + 1;
-				tokens = temp.substring(index).split(",");
-				temp = temp.substring(0, index);
-				
-				for(int i = 0; i < tokens.length; i++)
-					temp += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
-				
-				temp = temp.substring(0, temp.length() - 1);
 			}
 			
 			line.parsedLine = temp;
