@@ -1,5 +1,5 @@
 #Rift
-Rift is an Intel 8051/52 assembler written in Java. Rift is built with the book 
+  Rift is an Intel 8051/52 assembler written in Java. Rift is built with the book 
 "The 8051 Microcontroller and Embedded Systems" by Mazidi & Mazidi in mind.
 
   1. Rift can parse and perform error checking on standard 8051/52 based assembly
@@ -8,8 +8,8 @@ Rift is an Intel 8051/52 assembler written in Java. Rift is built with the book
   3. If no errors are found, a list and a hex file are created.
 
 ##Mnemonics
-  The entire 8051/52 instruction set is supported. The error checking is
-through. Everything from unidentified Mnemonic to invalid operands to incompatible
+  The entire 8051/52 instruction set is supported. The error checking is through.
+Everything from unidentified Mnemonic to invalid operands to incompatible
 data/address size to improper jump ranges are reported.
 
 ##Directives

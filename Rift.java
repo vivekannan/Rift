@@ -38,15 +38,19 @@ class Rift {
 			
 			HelperMethods.getOpcodes();
 			HelperMethods.getSymbols();
+			
 			HelperMethods.read();
 			HelperMethods.parse();
 			
 			HelperMethods.tokenize();
 			HelperMethods.printErrors();
+			
 			HelperMethods.allocROMAddr();
 			HelperMethods.printErrors();
+			
 			HelperMethods.deLabelize();
 			HelperMethods.printErrors();
+			
 			HelperMethods.createLst();
 			HelperMethods.createHex();
 		}

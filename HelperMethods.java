@@ -30,10 +30,12 @@ class HelperMethods {
 			opSource = new BufferedReader(new FileReader("hexcodes.txt"));
 			
 			for(int i = 0; (line = opSource.readLine()) != null; i++) {
-				tokens = line.split(" ", 2);
+				tokens = line.split(" ", -1);
+				
 				op = new Object[] {
 					Pattern.compile(tokens[1]),
 					String.format("%2s", Integer.toHexString(i).toUpperCase()).replace(' ', '0'),
+					Integer.parseInt(tokens[2]),
 				};
 				
 				if(Rift.opcodes.containsKey(tokens[0]))
@@ -49,8 +51,13 @@ class HelperMethods {
 			opSource.close();
 		}
 		
+		catch(NumberFormatException e) {
+			System.out.println("Invalid size for opcode at line number.");
+			System.exit(0);
+		}
+		
 		catch(Exception e) {
-			System.out.println("Can't find hexcodes! Exiting...");
+			System.out.println("Can't find hexcodes! Exiting..." + e);
 			System.exit(0);
 		}
 	}
@@ -193,7 +200,7 @@ class HelperMethods {
 					tokens = temp.split(" ");
 					
 					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
-						line.setError("Symbol name already defined or is a Mnemonic or Directive");
+						line.setError("Symbol already defined or is a Mnemonic or Directive");
 					
 					else
 						Rift.symbols.put(tokens[1], tokens[2]);
@@ -349,6 +356,7 @@ class HelperMethods {
 					try {
 						if(line.m.getClass().getName().equals("AJMP") || line.m.getClass().getName().equals("ACALL"))
 							line.m.opcode = HelperMethods.calcAddr(tokens[1], line);
+						
 						else
 							line.m.opcode = tokens[0] + HelperMethods.calcAddr(tokens[1], line);
 					}
@@ -382,8 +390,8 @@ class HelperMethods {
 				if(mnemonic.equals("LCALL") || mnemonic.equals("LJMP"))
 					return line.address;
 				
-				int lineAddress = Integer.parseInt(l.address, 16) + l.m.size;
 				int labelAddress = Integer.parseInt(line.address, 16);
+				int lineAddress = Integer.parseInt(l.address, 16) + l.m.size;
 				int jump = labelAddress - lineAddress;
 				
 				if(mnemonic.equals("SJMP") && (jump < -128 || jump > 127))
@@ -428,7 +436,7 @@ class HelperMethods {
 				if(line.parsedLine == null)
 					return;
 				
-				lstFile.println(String.format("%-8d%-6s%-6s %s", i + 1, line.address != null ? line.address : "", line.m != null ? line.m.opcode : "", line.rawLine));
+				lstFile.println(String.format("%-8d%-6s%-7s %s", i + 1, line.address != null ? line.address : "", line.m != null ? line.m.opcode : "", line.rawLine));
 			}
 			
 			lstFile.flush();

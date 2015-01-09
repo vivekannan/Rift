@@ -40,7 +40,7 @@ class Mnemonics {
 			else
 				temp = Integer.parseInt(s.replace("D", ""));
 			
-			//If number is negative, add shift value to create two complement value.
+			//If number is negative, add shift value to obtain two's complement.
 			if(temp < 0)
 				temp += temp > -255 ? 256 : 65536;
 			
@@ -80,7 +80,7 @@ class Mnemonics {
 			
 			if(match.matches()) {
 				this.opcode = (String) o[1];
-				this.size = 1 + match.groupCount() + (this.opcode.equals("02") || this.opcode.equals("12") || this.opcode.equals("90") ? 1 : 0);
+				this.size = (Integer) o[2];
 				
 				for(int i = 1; i <= match.groupCount(); i++) {
 					operand = match.group(i);
