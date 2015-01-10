@@ -102,11 +102,11 @@ class Mnemonics {
 
 class DB extends Mnemonics {
 	
-	static final Pattern p = Pattern.compile("(?:(?:(?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H))|#?\"[0-9A-Z]+\")(?:,|$))+");
+	static final Pattern DB_DIRECTIVE = Pattern.compile("(?:#?(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|\"[0-9A-F]+\")(?:,|$))+");
 	
 	boolean validate(String operands) throws Exception {
 		
-		if(!p.matcher(operands).matches())
+		if(!DB_DIRECTIVE.matcher(operands).matches())
 			throw new Exception("Invalid operands for DB directive.");
 		
 		operands = operands.replace("#", "");
