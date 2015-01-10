@@ -53,12 +53,12 @@ class HelperMethods {
 		
 		catch(NumberFormatException e) {
 			System.out.println("Invalid size for opcode at line number.");
-			System.exit(0);
+			System.exit(-1);
 		}
 		
 		catch(Exception e) {
 			System.out.println("Can't find hexcodes! Exiting..." + e);
-			System.exit(0);
+			System.exit(-2);
 		}
 	}
 	
@@ -88,9 +88,14 @@ class HelperMethods {
 			symbolSource.close();
 		}
 		
+		catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Invalid format for symbol definition.");
+			System.exit(-3);
+		}
+		
 		catch(Exception e) {
 			System.out.println("Can't find symbols! Exiting...");
-			System.exit(0);
+			System.exit(-4);
 		}
 	}
 	
@@ -118,12 +123,12 @@ class HelperMethods {
 		
 		catch(FileNotFoundException e) {
 			System.out.println(Rift.fileName + " not found.");
-			System.exit(0);
+			System.exit(-5);
 		}
 		
 		catch(IOException e) {
 			System.out.println(Rift.fileName + " cannot be opened/closed.");
-			System.exit(0);
+			System.exit(-6);
 		}
 	}
 	
@@ -200,7 +205,7 @@ class HelperMethods {
 					tokens = temp.split(" ");
 					
 					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
-						line.setError("Symbol already defined or is a Mnemonic or Directive");
+						line.setError("Symbol already defined or is a Mnemonic/Directive");
 					
 					else
 						Rift.symbols.put(tokens[1], tokens[2]);
@@ -295,7 +300,7 @@ class HelperMethods {
 		}
 		
 		if(errors)
-			System.exit(0);
+			System.exit(-7);
 	}
 	
 	/**
