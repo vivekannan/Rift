@@ -475,12 +475,12 @@ class HelperMethods {
 				checksum = 0;
 				
 				if(line.m != null) {
-					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.opcode.length() / 2), line.address != null ? line.address : "", line.m.opcode).replace(' ', '0');
+					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.size), line.address, line.m.opcode).replace(' ', '0');
 					
 					for(int i = 0; i < temp.length() / 2; i++)
 						checksum += Integer.parseInt(temp.substring(2 * i, 2 * (i + 1)), 16);
 					
-					hexFile.println(":" + temp + Integer.toHexString(checksum % 256).toUpperCase());
+					hexFile.println(":" + temp + Integer.toHexString(0x100 - checksum % 256).toUpperCase());
 				}
 			}
 			
