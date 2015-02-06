@@ -14,6 +14,8 @@ data/address size to improper jump ranges are reported.
 
 ##Directives
   Supported directives include ORG, END, DB, BIT & EQU.
+  
+  New directives can be created by adding their definition to the "directives.gr" file and creating a class with the directive's name. The class should inherit the Directives class.
 
 ##Usage
   Compile with
