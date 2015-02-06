@@ -1,15 +1,17 @@
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 class Line {
 	
 	Mnemonics m;
+	
 	String label;
 	String address;
 	String rawLine;
 	String parsedLine;
+	
 	ArrayList<String> errorStatements = new ArrayList<String>();
 	
 	Line(String l) {
@@ -25,11 +27,12 @@ class Line {
 
 class Rift {
 	
+	static Directives d;
 	static String fileName;
 	static ArrayList<Line> lines = new ArrayList<Line>();
 	static HashMap<String, String> symbols = new HashMap<String, String>();
+	static HashMap<String, Pattern> directives = new HashMap<String, Pattern>();
 	static HashMap<String, ArrayList<Object[]>> opcodes = new HashMap<String, ArrayList<Object[]>>();
-	static HashSet<String> directives = new HashSet<String>(Arrays.asList("ORG", "END", "BIT", "EQU", "DB"));
 	
 	public static void main(String args[]) {
 		
@@ -37,6 +40,7 @@ class Rift {
 			fileName = args[0];
 			
 			HelperMethods.getOpcodes();
+			HelperMethods.getDirectives();
 			HelperMethods.getSymbols();
 			
 			HelperMethods.read();

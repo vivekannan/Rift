@@ -9,8 +9,6 @@ class Mnemonics {
 	String opcode = "";
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
-	Mnemonics() {}
-	
 	Mnemonics(String mnemonic) throws Exception {
 		
 		if(!Rift.opcodes.containsKey(mnemonic))
@@ -24,12 +22,8 @@ class Mnemonics {
 		int temp;
 		
 		try {
-			if(s.charAt(0) == '"') {
-				if(this.mnemonic == null)
-					return s.substring(1, s.length() - 1);
-				
+			if(s.charAt(0) == '"')
 				temp = Integer.parseInt(s.substring(1, s.length() - 1), 16);
-			}
 			
 			else if(s.charAt(s.length() - 1) == 'H')
 				temp = Integer.parseInt(s.substring(0, s.length() - 1), 16);
@@ -48,16 +42,12 @@ class Mnemonics {
 			
 			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
 				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
-		
-			throw new Exception();
-		}
-		
-		catch(Exception e) {
-			
-			if(this.mnemonic == null)
-				throw new Exception("Directive DB expects 8-bit data or String.");
 			
 			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.mnemonic, this.opcode.equals("90") ? 16 : 8));
+		}
+		
+		catch(NumberFormatException e) {
+			throw new Exception("Invalid number for given base.");
 		}
 	}
 	
@@ -97,28 +87,5 @@ class Mnemonics {
 		}
 		
 		return false;
-	}
-}
-
-class DB extends Mnemonics {
-	
-	static final Pattern DB_DIRECTIVE = Pattern.compile("(?:#?(?:-?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|\"[0-9A-F]+\")(?:,|$))+");
-	
-	boolean validate(String operands) throws Exception {
-		
-		if(!DB_DIRECTIVE.matcher(operands).matches())
-			throw new Exception("Invalid operands for DB directive.");
-		
-		operands = operands.replace("#", "");
-		
-		for(String data : operands.split(","))
-			this.opcode += this.hexify(data);
-		
-		this.size = this.opcode.length() / 2;
-		
-		if(this.size > 16)
-			throw new Exception(String.format("DB can handle only 16 bytes of data. Given %d bytes.", this.size));
-		
-		return true;
 	}
 }

@@ -10,26 +10,29 @@ import java.io.FileNotFoundException;
 class HelperMethods {
 	
 	/**
-	*	Reads hexcodes.txt and obtains the opcodes along with the proper regex
-	*	for the operands. 
+	*	Reads hexcodes.gr and obtains the opcodes along with the proper regex for
+	*	the operands. 
 	*	
 	*	@param None
 	*	@return void
-	*	@throws FileNotFoundException - can't find hexcodes.txt
-	*	@throws IOException - can't open hexcodes.txt
+	*	@throws FileNotFoundException - can't find hexcodes.gr
+	*	@throws IOException - can't open hexcodes.gr
+	*	@throws ArrayIndexOutOfBoundsException - invalid format
+	*	@throws NumberFormatException - invalid opcode size
 	*/
 	static void getOpcodes() {
 		
+		int i = 0;
 		Object[] op;
-		String line;
+		String line = "";
 		String[] tokens;
 		BufferedReader opSource;
 		ArrayList<Object[]> temp;
 		
 		try {
-			opSource = new BufferedReader(new FileReader("hexcodes.txt"));
+			opSource = new BufferedReader(new FileReader("hexcodes.gr"));
 			
-			for(int i = 0; (line = opSource.readLine()) != null; i++) {
+			for(i = 0; (line = opSource.readLine()) != null; i++) {
 				tokens = line.split(" ", -1);
 				
 				op = new Object[] {
@@ -51,14 +54,78 @@ class HelperMethods {
 			opSource.close();
 		}
 		
-		catch(NumberFormatException e) {
-			System.out.println("Invalid size for opcode at line number.");
+		catch(FileNotFoundException e) {
+			System.out.println("Can't find hexcodes!");
 			System.exit(-1);
 		}
 		
-		catch(Exception e) {
-			System.out.println("Can't find hexcodes! Exiting..." + e);
+		catch(IOException e) {
+			System.out.println("Can't read hexcodes!");
 			System.exit(-2);
+		}
+		
+		catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println(String.format("hexcodes.gr::%d:Invalid format for hexcode grammar declaration. Expecting MNEMONIC REGEX SIZE.\n%s", i + 1, line));
+			System.exit(-3);
+		}
+		
+		catch(NumberFormatException e) {
+			System.out.println(String.format("hexcodes.gr::%d:Invalid size for opcode.", i + 1, line));
+			System.exit(-4);
+		}
+	}
+	
+	/**
+	*	Reads directives.gr and gets the pre-defined grammar for different
+	*	directives.
+	*	
+	*	@param None
+	*	@return void
+	*	@throws FileNotFoundException - can't find directives.gr
+	*	@throws IOException - can't open directives.gr
+	*	@throws ArrayIndexOutOfBoundsException - invalid format
+	*	@throws ClassNotFoundException - class for a directive not defined
+	*/
+	static void getDirectives() {
+		
+		int i = 0;
+		String line = "";
+		String[] tokens;
+		BufferedReader directiveSource;
+		
+		try {
+			directiveSource = new BufferedReader(new FileReader("directives.gr"));
+			
+			for(i = 1; (line = directiveSource.readLine()) != null; i++) {
+				tokens = line.split(" ", 2);
+				
+				//Check if class for directive is defined.
+				Class.forName(tokens[0]);
+				
+				Rift.directives.put(tokens[0], Pattern.compile(tokens[1]));
+			}
+			
+			directiveSource.close();
+		}
+		
+		catch(FileNotFoundException e) {
+			System.out.println("Can't find directives.gr!");
+			System.exit(-5);
+		}
+		
+		catch(IOException e) {
+			System.out.println("Can't read directives.gr!");
+			System.exit(-6);
+		}
+		
+		catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println(String.format("directives.gr::%d:Invalid format for directive grammar. Expecting DIRECTIVE REGEX\n%s", i, line));
+			System.exit(-7);
+		}
+		
+		catch(ClassNotFoundException e) {
+			System.out.println(String.format("directive.gr::%d:Class for directive not defined.\n%s", i, line));
+			System.exit(-8);
 		}
 	}
 	
@@ -70,17 +137,19 @@ class HelperMethods {
 	*	@return void
 	*	@throws FileNotFoundException - can't find symbols.txt
 	*	@throws IOException - can't open symbols.txt
+	*	@throws ArrayIndexOutOfBoundsException - invalid format
 	*/
 	static void getSymbols() {
 		
-		String line;
+		int i = 0;
+		String line = "";
 		String[] tokens;
 		BufferedReader symbolSource;
 		
 		try {
 			symbolSource = new BufferedReader(new FileReader("symbols.txt"));
 			
-			while((line = symbolSource.readLine()) != null) {
+			for(i = 0; (line = symbolSource.readLine()) != null; i++) {
 				tokens = line.split(" ");
 				Rift.symbols.put(tokens[0], tokens[1]);
 			}
@@ -88,14 +157,19 @@ class HelperMethods {
 			symbolSource.close();
 		}
 		
-		catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println("Invalid format for symbol definition.");
-			System.exit(-3);
+		catch(FileNotFoundException e) {
+			System.out.println("Can't find symbols.txt!");
+			System.exit(-9);
 		}
 		
-		catch(Exception e) {
-			System.out.println("Can't find symbols! Exiting...");
-			System.exit(-4);
+		catch(IOException e) {
+			System.out.println("Can't read symbols.txt!");
+			System.exit(-10);
+		}
+		
+		catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println(String.format("symbols.txt::%d:Invalid format for symbol definition. Expecting SYMBOL VALUE.\n%s", (i + 1), line));
+			System.exit(-11);
 		}
 	}
 	
@@ -123,12 +197,12 @@ class HelperMethods {
 		
 		catch(FileNotFoundException e) {
 			System.out.println(Rift.fileName + " not found.");
-			System.exit(-5);
+			System.exit(-12);
 		}
 		
 		catch(IOException e) {
 			System.out.println(Rift.fileName + " cannot be opened/closed.");
-			System.exit(-6);
+			System.exit(-13);
 		}
 	}
 	
@@ -164,9 +238,9 @@ class HelperMethods {
 		Matcher m;
 		String temp;
 		String[] tokens;
+		
+		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]* ?:.*$");
 		final Pattern ASCII_DATA = Pattern.compile("\"\\p{ASCII}+?\"");
-		final Pattern ORG_DIRECTIVE = Pattern.compile("ORG (?:0[A-F]|\\d)[0-9A-F]{0,3}H?");
-		final Pattern EQU_DIRECTIVE = Pattern.compile("(?:EQU|BIT) [A-Z][0-9A-Z]* (?:(?:#-?)?(?:[01]+B|\\d+D?|\\d[0-9A-F]*H)|#\"[0-9A-F]+\")");
 		
 		for(Line line : Rift.lines) {
 			temp = line.rawLine;
@@ -185,7 +259,21 @@ class HelperMethods {
 			//Remove excessive whitespaces and convert statement to standard form.
 			temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
 			
-			//Replace all symbols with predefined symbols.
+			if(LABEL.matcher(temp).matches()) {
+				tokens = temp.split(": ?", 2);
+				line.label = tokens[0].trim();
+				temp = tokens[1];
+				
+				if(Rift.opcodes.containsKey(line.label) || Rift.symbols.containsKey(line.label) || Rift.directives.containsKey(line.label))
+					line.setError("Illegal label name.");
+			}
+			
+			if(temp.equals("")) {
+				line.parsedLine = "";
+				continue;
+			}
+			
+			//Replace all symbols with predefined values.
 			index = temp.lastIndexOf(" ") + 1;
 			tokens = temp.substring(index).split(",");
 			temp = temp.substring(0, index);
@@ -194,75 +282,59 @@ class HelperMethods {
 				temp += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
 			
 			temp = temp.substring(0, temp.length() - 1);
+			tokens = temp.split(" ", 2);
 			
-			if(temp.startsWith("BIT ") || temp.startsWith("EQU ") || temp.startsWith("ORG ")) {
-				if(ORG_DIRECTIVE.matcher(temp).matches()) {
-					tokens = temp.split(" ");
-					line.address = tokens[1].replace("H", "");
+			if(tokens.length == 1)
+				tokens = new String[] { tokens[0], "" };
+			
+			if(Rift.directives.containsKey(tokens[0])) {
+				try {
+					Rift.d = (Directives) Class.forName(tokens[0]).newInstance();
+					
+					if(!Rift.directives.get(tokens[0]).matcher(tokens[1]).matches()) {
+						line.setError("Invalid operands for " + tokens[0] + " directive.");
+						continue;
+					}
+					
+					Rift.d.execute(tokens[1], line);
 				}
 				
-				else if (EQU_DIRECTIVE.matcher(temp).matches()) {
-					tokens = temp.split(" ");
-					
-					if(Rift.opcodes.containsKey(tokens[1]) || Rift.symbols.containsKey(tokens[1]) || Rift.directives.contains(tokens[1]))
-						line.setError("Symbol already defined or is a Mnemonic/Directive");
-					
-					else
-						Rift.symbols.put(tokens[1], tokens[2]);
+				catch(Exception e) {
+					line.setError(e.getMessage());
 				}
-				
-				else
-					line.setError("Invalid operands for " + temp.split(" ")[0] + " directive.");
 				
 				temp = "";
 			}
 			
 			line.parsedLine = temp;
-			
-			if(temp.equals("END"))
-				return;
 		}
 	}
 	
 	/**
 	*	Tokenizes the parsed lines into mnemonics and operands. A Mnemonic obj
 	*	is created for every line with a mnemonic in it. The validate method
-	*	tries to amtch the given operands with the regex as defined in hexcodes.txt.
+	*	tries to match the given operands with the regex as defined in hexcodes.gr.
 	*	
 	*	@param None
 	*	@return void
-	*	@throws FileNotFoundException If given file is not found.
-	*	@throws IOException If file cannot be opened.
 	*/
 	static void tokenize() {
 		
 		String temp;
 		String[] tokens;
-		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]* ?:.*$");
 		
 		for(Line line : Rift.lines) {
-			temp = line.parsedLine;
-			
-			if(temp.equals("END"))
+			if(line.parsedLine == null)
 				return;
 			
+			temp = line.parsedLine;
+			
 			if(temp.length() > 0) {
-				if(LABEL.matcher(temp).matches()) {
-					tokens = temp.split(": ?", 2);
-					line.label = tokens[0].trim();
-					temp = tokens[1];
-					
-					if(Rift.opcodes.containsKey(line.label) || Rift.symbols.containsKey(line.label) || Rift.directives.contains(line.label))
-						line.setError("Illegal label name.");
-				}
-				
-				if(temp.equals(""))
-					continue;
 				
 				tokens = temp.split(" ", 2);
 				
 				try {
-					line.m = (tokens[0].equals("DB")) ? new DB() : new Mnemonics(tokens[0]);
+					line.m = new Mnemonics(tokens[0]);
 					
 					if(!line.m.validate(tokens.length == 2 ? tokens[1] : ""))
 						line.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
@@ -278,8 +350,8 @@ class HelperMethods {
 	/**
 	*	Prints errors that were set by other methods. Program stops if errors are
 	*	found.
-	*
-	*	@params None
+	*	
+	*	@param None
 	*	@return void
 	*	@throws None
 	*/
@@ -300,13 +372,13 @@ class HelperMethods {
 		}
 		
 		if(errors)
-			System.exit(-7);
+			System.exit(-14);
 	}
 	
 	/**
 	*	Allocates address to statements with proper instruction.
 	*
-	*	@params None
+	*	@param None
 	*	@return void
 	*	@throws None
 	*/
@@ -323,7 +395,7 @@ class HelperMethods {
 				line.address = null;
 			}
 			
-			if(line.m != null) {
+			else if(line.m != null) {
 				line.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
 				start += line.m.size;
 				
@@ -351,7 +423,7 @@ class HelperMethods {
 		String[] tokens;
 		
 		for(Line line : Rift.lines) {
-			if(line.parsedLine.equals("END"))
+			if(line.parsedLine == null)
 				return;
 			
 			if(line.m != null) {
@@ -384,9 +456,9 @@ class HelperMethods {
 	*	@throws Exception - jump range exceeds limit
 	*/
 	static String calcAddr(String label, Line l) throws Exception {
-		
+		//BEWARE! BLACK MAGIC AHEAD!! ;)
 		for(Line line : Rift.lines) {
-			if(line.parsedLine.equals("END"))
+			if(line.parsedLine == null)
 				break;
 			
 			if(line.label != null && line.label.equals(label)) {
