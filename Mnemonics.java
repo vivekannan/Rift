@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 class Mnemonics {
 	
 	int size;
+	String opcode;
 	String mnemonic;
-	String opcode = "";
 	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
 	
 	Mnemonics(String mnemonic) throws Exception {

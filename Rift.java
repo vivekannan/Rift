@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 class Line {
 	
 	Mnemonics m;
-	
 	String label;
 	String address;
 	String rawLine;

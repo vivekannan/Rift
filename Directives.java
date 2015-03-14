@@ -1,6 +1,6 @@
 abstract class Directives {
 	
-	abstract void execute(String operands, Line line) throws Exception;
+	abstract boolean execute(String operands, Line line) throws Exception;
 }
 
 class DB extends Directives {
@@ -29,17 +29,17 @@ class DB extends Directives {
 			s = Integer.toHexString(temp);
 			
 			if(s.length() > 2)
-				throw new Exception("Directive DB expects 8-bit data or String.");
+				throw new Exception();
 			
 			return String.format("%2S", s).replace(' ', '0');
 		}
 		
-		catch(NumberFormatExpection e) {
-			throw new Exception("Invalid number for given base.");
+		catch(Exception e) {
+			throw new Exception("Directive DB expects 8-bit data or String.");
 		}
 	}
 	
-	void execute(String operands, Line line) throws Exception {
+	boolean execute(String operands, Line line) throws Exception {
 		
 		int size;
 		String temp = "";
@@ -57,20 +57,24 @@ class DB extends Directives {
 		line.m = new Mnemonics("\"RESERVED\"");
 		line.m.size = size;
 		line.m.opcode = temp;
+		
+		return true;
 	}
 }
 
 class ORG extends Directives {
 	
-	void execute(String operands, Line line) throws Exception {
+	boolean execute(String operands, Line line) throws Exception {
 		
 		line.address = operands.replace("H", "");
+		
+		return true;
 	}
 }
 
 class BIT extends Directives {
 	
-	void execute(String operands, Line line) throws Exception {
+	boolean execute(String operands, Line line) throws Exception {
 		
 		String[] tokens = operands.split(" ");
 		
@@ -78,12 +82,14 @@ class BIT extends Directives {
 			throw new Exception("Symbol already defined or is a Mnemonic/Directive");
 		
 		Rift.symbols.put(tokens[0], tokens[1]);
+		
+		return true;
 	}
 }
 
 class EQU extends Directives {
 	
-	void execute(String operands, Line line) throws Exception {
+	boolean execute(String operands, Line line) throws Exception {
 		
 		String[] tokens = operands.split(" ");
 		
@@ -91,13 +97,17 @@ class EQU extends Directives {
 			throw new Exception("Symbol already defined or is a Mnemonic/Directive");
 		
 		Rift.symbols.put(tokens[0], tokens[1]);
+		
+		return true;
 	}
 }
 
 class END extends Directives {
 	
-	void execute(String operands, Line line) throws Exception {
+	boolean execute(String operands, Line line) throws Exception {
 		
-		return;
+		line.parsedLine = "";
+		
+		return false;
 	}
 }

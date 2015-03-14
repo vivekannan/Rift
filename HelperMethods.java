@@ -23,14 +23,14 @@ class HelperMethods {
 	static void getOpcodes() {
 		
 		int i = 0;
-		Object[] op;
 		String line = "";
-		String[] tokens;
-		BufferedReader opSource;
-		ArrayList<Object[]> temp;
 		
-		try {
-			opSource = new BufferedReader(new FileReader("hexcodes.gr"));
+		try{
+			Object[] op;
+			String[] tokens;
+			ArrayList<Object[]> temp;
+			
+			BufferedReader opSource = new BufferedReader(new FileReader("hexcodes.gr"));
 			
 			for(i = 0; (line = opSource.readLine()) != null; i++) {
 				tokens = line.split(" ", -1);
@@ -90,11 +90,11 @@ class HelperMethods {
 		
 		int i = 0;
 		String line = "";
-		String[] tokens;
-		BufferedReader directiveSource;
 		
 		try {
-			directiveSource = new BufferedReader(new FileReader("directives.gr"));
+			String[] tokens;
+			
+			BufferedReader directiveSource = new BufferedReader(new FileReader("directives.gr"));
 			
 			for(i = 1; (line = directiveSource.readLine()) != null; i++) {
 				tokens = line.split(" ", 2);
@@ -143,11 +143,11 @@ class HelperMethods {
 		
 		int i = 0;
 		String line = "";
-		String[] tokens;
-		BufferedReader symbolSource;
 		
 		try {
-			symbolSource = new BufferedReader(new FileReader("symbols.txt"));
+			String[] tokens;
+			
+			BufferedReader symbolSource = new BufferedReader(new FileReader("symbols.txt"));
 			
 			for(i = 0; (line = symbolSource.readLine()) != null; i++) {
 				tokens = line.split(" ");
@@ -183,11 +183,9 @@ class HelperMethods {
 	*/
 	static void read() {
 		
-		String line;
-		BufferedReader asmSource;
-		
 		try {
-			asmSource = new BufferedReader(new FileReader(Rift.fileName));
+			String line;
+			BufferedReader asmSource = new BufferedReader(new FileReader(Rift.fileName));
 			
 			for(int i = 1; (line = asmSource.readLine()) != null; i++)
 				Rift.lines.add(new Line(line));
@@ -296,7 +294,8 @@ class HelperMethods {
 						continue;
 					}
 					
-					Rift.d.execute(tokens[1], line);
+					if(!Rift.d.execute(tokens[1], line))
+						return;
 				}
 				
 				catch(Exception e) {
@@ -330,7 +329,6 @@ class HelperMethods {
 			temp = line.parsedLine;
 			
 			if(temp.length() > 0) {
-				
 				tokens = temp.split(" ", 2);
 				
 				try {
@@ -431,7 +429,7 @@ class HelperMethods {
 					tokens = line.m.opcode.split(":");
 					
 					try {
-						if(line.m.getClass().getName().equals("AJMP") || line.m.getClass().getName().equals("ACALL"))
+						if(line.m.mnemonic.equals("AJMP") || line.m.mnemonic.equals("ACALL"))
 							line.m.opcode = HelperMethods.calcAddr(tokens[1], line);
 						
 						else
@@ -511,12 +509,11 @@ class HelperMethods {
 				Line line = Rift.lines.get(i);
 				
 				if(line.parsedLine == null)
-					return;
+					break;
 				
 				lstFile.println(String.format("%-8d%-6s%-7s %s", i + 1, line.address != null ? line.address : "", line.m != null ? line.m.opcode : "", line.rawLine));
 			}
 			
-			lstFile.flush();
 			lstFile.close();
 		}
 		
@@ -557,7 +554,6 @@ class HelperMethods {
 			}
 			
 			hexFile.println(":00000001FF");
-			hexFile.flush();
 			hexFile.close();
 		}
 		
