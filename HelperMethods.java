@@ -389,6 +389,11 @@ class HelperMethods {
 				return;
 			
 			if(line.address != null) {
+				if(Integer.parseInt(line.address, 16) < start) {
+					line.setError("Address changes must be progressive.");
+					return;
+				}
+				
 				start = Integer.parseInt(line.address, 16);
 				line.address = null;
 			}
