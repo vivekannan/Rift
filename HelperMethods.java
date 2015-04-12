@@ -481,16 +481,13 @@ class HelperMethods {
 					if(!(labelAddress >= (lineAddress / 2048) * 2048 && labelAddress < (lineAddress / 2048 + 1) * 2048))
 						throw new Exception(String.format("Label address is not a part of the %s 2KB block.", mnemonic));
 					
-					String opcode = Integer.toBinaryString(jump);
-					opcode = ("00000000000" + opcode).substring(opcode.length());
-					opcode = Integer.toHexString(Integer.parseInt(opcode.substring(0, 3) + (mnemonic.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(3), 2));
+					String opcode = String.format("%16s", Integer.toBinaryString(labelAddress)).replace(' ', '0');
+					opcode = opcode.substring(5, 8) + (mnemonic.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(8, 16);
 					
-					return ("0000" + opcode).substring(opcode.length()).toUpperCase();
+					return String.format("%4S", Integer.toHexString(Integer.parseInt(opcode, 2))).replace(' ', '0');
 				}
 				
-				String s = Integer.toHexString(jump).toUpperCase();
-				
-				return ("00" + s).substring(s.length());
+				return String.format("%2S", Integer.toHexString(jump)).replace(' ', '0');
 			}
 		}
 		
