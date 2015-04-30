@@ -242,17 +242,15 @@ class HelperMethods {
 		
 		for(Line line : Rift.lines) {
 			temp = line.rawLine;
-			index = temp.indexOf(';');
-			
-			//Remove all characters after first ";" (inclusive).
-			if(index != -1)
-				temp = temp.substring(0, index);
-			
 			m = ASCII_DATA.matcher(temp);
 			
 			//Match ascii data within quotes and convert to hex.
 			while(m.find())
 				temp = temp.replace(m.group(), HelperMethods.asciify(m.group()));
+			
+			//Remove all characters after first ";" (inclusive).
+			if((index = temp.indexOf(';')) != -1)
+				temp = temp.substring(0, index);
 			
 			//Remove excessive whitespaces and convert statement to standard form.
 			temp = temp.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",").toUpperCase();
