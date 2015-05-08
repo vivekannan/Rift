@@ -35,9 +35,12 @@ class HelperMethods {
 			for(i = 0; (line = opSource.readLine()) != null; i++) {
 				tokens = line.split(" ", -1);
 				
+				if(tokens.length != 3)
+					throw new Exception();
+				
 				op = new Object[] {
 					Pattern.compile(tokens[1]),
-					String.format("%2s", Integer.toHexString(i).toUpperCase()).replace(' ', '0'),
+					String.format("%2X", i).replace(' ', '0'),
 					Integer.parseInt(tokens[2]),
 				};
 				
@@ -64,14 +67,14 @@ class HelperMethods {
 			System.exit(-2);
 		}
 		
-		catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println(String.format("hexcodes.gr::%d:Invalid format for hexcode grammar declaration. Expecting MNEMONIC REGEX SIZE.\n%s", i + 1, line));
-			System.exit(-3);
+		catch(NumberFormatException e) {
+			System.out.println(String.format("hexcodes.gr::%d:Invalid size for opcode\n%s.", i + 1, line));
+			System.exit(-4);
 		}
 		
-		catch(NumberFormatException e) {
-			System.out.println(String.format("hexcodes.gr::%d:Invalid size for opcode.", i + 1, line));
-			System.exit(-4);
+		catch(Exception e) {
+			System.out.println(String.format("hexcodes.gr::%d:Invalid format for hexcode grammar declaration. Expecting MNEMONIC REGEX SIZE.\n%s", i + 1, line));
+			System.exit(-3);
 		}
 	}
 	
@@ -99,6 +102,9 @@ class HelperMethods {
 			for(i = 1; (line = directiveSource.readLine()) != null; i++) {
 				tokens = line.split(" ", 2);
 				
+				if(tokens.length != 2)
+					throw new Exception();
+				
 				//Check if class for directive is defined.
 				Class.forName(tokens[0]);
 				
@@ -118,14 +124,14 @@ class HelperMethods {
 			System.exit(-6);
 		}
 		
-		catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println(String.format("directives.gr::%d:Invalid format for directive grammar. Expecting DIRECTIVE REGEX\n%s", i, line));
-			System.exit(-7);
-		}
-		
 		catch(ClassNotFoundException e) {
 			System.out.println(String.format("directive.gr::%d:Class for directive not defined.\n%s", i, line));
 			System.exit(-8);
+		}
+		
+		catch(Exception e) {
+			System.out.println(String.format("directives.gr::%d:Invalid format for directive grammar. Expecting DIRECTIVE REGEX\n%s", i, line));
+			System.exit(-7);
 		}
 	}
 	
@@ -151,6 +157,10 @@ class HelperMethods {
 			
 			for(i = 0; (line = symbolSource.readLine()) != null; i++) {
 				tokens = line.split(" ");
+				
+				if(tokens.length != 2)
+					throw new Exception();
+				
 				Rift.symbols.put(tokens[0], tokens[1]);
 			}
 			
@@ -167,7 +177,7 @@ class HelperMethods {
 			System.exit(-10);
 		}
 		
-		catch(ArrayIndexOutOfBoundsException e) {
+		catch(Exception e) {
 			System.out.println(String.format("symbols.txt::%d:Invalid format for symbol definition. Expecting SYMBOL VALUE.\n%s", (i + 1), line));
 			System.exit(-11);
 		}
@@ -217,9 +227,9 @@ class HelperMethods {
 		String temp = "";
 		
 		for(int i = 1; i < s.length() - 1; i++)
-			temp += String.format("%2s", Integer.toHexString((int) s.charAt(i))).replace(" ", "0");
+			temp += String.format("%2X", (int) s.charAt(i)).replace(' ', '0');
 		
-		return String.format("\"%S\"", temp);
+		return String.format("\"%s\"", temp);
 	}
 	
 	/**
@@ -397,7 +407,7 @@ class HelperMethods {
 			}
 			
 			else if(line.m != null) {
-				line.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
+				line.address = String.format("%4X", start).replace(' ', '0');
 				start += line.m.size;
 				
 				if(start > 0xFFFF) {
@@ -407,7 +417,7 @@ class HelperMethods {
 			}
 			
 			else if(line.label != null)
-				line.address = String.format("%4s", Integer.toHexString(start).toUpperCase()).replace(" ", "0");
+				line.address = String.format("%4X", start).replace(' ', '0');
 		}
 	}
 	
@@ -482,10 +492,10 @@ class HelperMethods {
 					String opcode = String.format("%16s", Integer.toBinaryString(labelAddress)).replace(' ', '0');
 					opcode = opcode.substring(5, 8) + (mnemonic.equals("AJMP") ? "0" : "1") + "0001" + opcode.substring(8, 16);
 					
-					return String.format("%4S", Integer.toHexString(Integer.parseInt(opcode, 2))).replace(' ', '0');
+					return String.format("%4X", Integer.parseInt(opcode, 2)).replace(' ', '0');
 				}
 				
-				return String.format("%2S", Integer.toHexString(jump)).replace(' ', '0');
+				return String.format("%2X", jump).replace(' ', '0');
 			}
 		}
 		
@@ -544,7 +554,7 @@ class HelperMethods {
 				checksum = 0;
 				
 				if(line.m != null) {
-					temp = String.format("%2S%s00%S", Integer.toHexString(line.m.size), line.address, line.m.opcode).replace(' ', '0');
+					temp = String.format("%2X%S00%S", line.m.size, line.address, line.m.opcode).replace(' ', '0');
 					
 					for(int i = 0; i < temp.length() / 2; i++)
 						checksum += Integer.parseInt(temp.substring(2 * i, 2 * (i + 1)), 16);
