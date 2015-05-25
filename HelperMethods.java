@@ -6,17 +6,18 @@ import java.io.BufferedReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.FileNotFoundException;
+import java.util.regex.PatternSyntaxException;
 
 class HelperMethods {
 	
 	/**
-	*	Reads hexcodes.gr and obtains the opcodes along with the proper regex for
+	*	Reads opcodes.gr and obtains the opcodes along with the proper regex for
 	*	the operands. 
 	*	
 	*	@param None
 	*	@return void
-	*	@throws FileNotFoundException - can't find hexcodes.gr
-	*	@throws IOException - can't open hexcodes.gr
+	*	@throws FileNotFoundException - can't find opcodes.gr
+	*	@throws IOException - can't open opcodes.gr
 	*	@throws ArrayIndexOutOfBoundsException - invalid format
 	*	@throws NumberFormatException - invalid opcode size
 	*/
@@ -26,61 +27,42 @@ class HelperMethods {
 		String line = "";
 		
 		try{
-			Object[] op;
-			String[] tokens;
-			ArrayList<Object[]> temp;
+			BufferedReader opSource = new BufferedReader(new FileReader("opcodes.gr"));
 			
-			BufferedReader opSource = new BufferedReader(new FileReader("hexcodes.gr"));
-			
-			for(i = 0; (line = opSource.readLine()) != null; i++) {
-				tokens = line.split(" ", -1);
-				
-				if(tokens.length != 3)
-					throw new Exception();
-				
-				op = new Object[] {
-					Pattern.compile(tokens[1]),
-					String.format("%2X", i).replace(' ', '0'),
-					Integer.parseInt(tokens[2]),
-				};
-				
-				if(Rift.opcodes.containsKey(tokens[0]))
-					Rift.opcodes.get(tokens[0]).add(op);
-				
-				else {
-					temp = new ArrayList<Object[]>();
-					temp.add(op);
-					Rift.opcodes.put(tokens[0], temp);
-				}
-			}
+			for(i = 0; (line = opSource.readLine()) != null; i++)
+				new Opcode(line, i);
 			
 			opSource.close();
 		}
 		
 		catch(FileNotFoundException e) {
-			System.out.println("Can't find hexcodes!");
+			System.out.println("Can't find opcodes.gr!");
 			System.exit(-1);
 		}
 		
 		catch(IOException e) {
-			System.out.println("Can't read hexcodes!");
+			System.out.println("Can't read opcodes.gr!");
 			System.exit(-2);
 		}
 		
 		catch(NumberFormatException e) {
-			System.out.println(String.format("hexcodes.gr::%d:Invalid size for opcode\n%s.", i + 1, line));
+			System.out.println(String.format("opcodes.gr::%d:Invalid size for opcode/operand\n%s.", i + 1, line));
 			System.exit(-4);
 		}
 		
+		catch(PatternSyntaxException e) {
+			System.out.println(String.format("opcodes.gr::%d:Syntax error in Regex.\n%s", i + 1, line));
+			System.exit(-3);
+		}
+		
 		catch(Exception e) {
-			System.out.println(String.format("hexcodes.gr::%d:Invalid format for hexcode grammar declaration. Expecting MNEMONIC REGEX SIZE.\n%s", i + 1, line));
+			System.out.println(String.format("opcodes.gr::%d:Invalid format for opcode grammar declaration. Expecting MNEMONIC REGEX OPCODE-SIZE [OPERANDS-SIZE, ].\n%s", i + 1, line));
 			System.exit(-3);
 		}
 	}
 	
 	/**
-	*	Reads directives.gr and gets the pre-defined grammar for different
-	*	directives.
+	*	Reads directives.gr and gets the pre-defined grammar for different directives.
 	*	
 	*	@param None
 	*	@return void
@@ -125,8 +107,13 @@ class HelperMethods {
 		}
 		
 		catch(ClassNotFoundException e) {
-			System.out.println(String.format("directive.gr::%d:Class for directive not defined.\n%s", i, line));
+			System.out.println(String.format("directives.gr::%d:Class for directive not defined.\n%s", i, line));
 			System.exit(-8);
+		}
+		
+		catch(PatternSyntaxException e) {
+			System.out.println(String.format("directives.gr::%d:Syntax error in Regex.\n%s", i, line));
+			System.exit(-7);
 		}
 		
 		catch(Exception e) {
@@ -152,7 +139,6 @@ class HelperMethods {
 		
 		try {
 			String[] tokens;
-			
 			BufferedReader symbolSource = new BufferedReader(new FileReader("symbols.txt"));
 			
 			for(i = 0; (line = symbolSource.readLine()) != null; i++) {
@@ -224,12 +210,12 @@ class HelperMethods {
 	*/
 	static String asciify(String s) {
 		
-		String temp = "";
+		String temp = "\"";
 		
 		for(int i = 1; i < s.length() - 1; i++)
 			temp += String.format("%2X", (int) s.charAt(i)).replace(' ', '0');
 		
-		return String.format("\"%s\"", temp);
+		return temp + "\"";
 	}
 	
 	/**
@@ -247,7 +233,7 @@ class HelperMethods {
 		String temp;
 		String[] tokens;
 		
-		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z0-9]* ?:.*$");
+		final Pattern LABEL = Pattern.compile("^[A-Z][A-Z\\d]* ?:.*$");
 		final Pattern ASCII_DATA = Pattern.compile("\"\\p{ASCII}+?\"");
 		
 		for(Line line : Rift.lines) {
@@ -295,14 +281,12 @@ class HelperMethods {
 			
 			if(Rift.directives.containsKey(tokens[0])) {
 				try {
-					Rift.d = (Directives) Class.forName(tokens[0]).newInstance();
-					
 					if(!Rift.directives.get(tokens[0]).matcher(tokens[1]).matches()) {
 						line.setError("Invalid operands for " + tokens[0] + " directive.");
 						continue;
 					}
 					
-					if(!Rift.d.execute(tokens[1], line))
+					if(!((Directive) Class.forName(tokens[0]).newInstance()).execute(tokens[1], line))
 						return;
 				}
 				
@@ -320,30 +304,20 @@ class HelperMethods {
 	/**
 	*	Tokenizes the parsed lines into mnemonics and operands. A Mnemonic obj
 	*	is created for every line with a mnemonic in it. The validate method
-	*	tries to match the given operands with the regex as defined in hexcodes.gr.
+	*	tries to match the given operands with the regex as defined in opcodes.gr.
 	*	
 	*	@param None
 	*	@return void
 	*/
 	static void tokenize() {
 		
-		String temp;
-		String[] tokens;
-		
 		for(Line line : Rift.lines) {
 			if(line.parsedLine == null)
 				return;
 			
-			temp = line.parsedLine;
-			
-			if(temp.length() > 0) {
-				tokens = temp.split(" ", 2);
-				
+			if(line.parsedLine.length() > 0) {
 				try {
-					line.m = new Mnemonics(tokens[0]);
-					
-					if(!line.m.validate(tokens.length == 2 ? tokens[1] : ""))
-						line.setError("Invalid operand(s) for Mnemonic " + tokens[0]);
+					line.m = new Mnemonics(line.parsedLine);
 				}
 				
 				catch(Exception e) {
@@ -363,17 +337,18 @@ class HelperMethods {
 	*/
 	static void printErrors() {
 		
+		Line line;
 		boolean errors = false;
 		
 		for(int i = 0; i < Rift.lines.size(); i++) {
 			
-			Line line = Rift.lines.get(i);
+			line = Rift.lines.get(i);
 			
-			if(!line.errorStatements.isEmpty()) {
+			if(line.errorStatements != null) {
 				errors = true;
 				
 				for(String error : line.errorStatements)
-					System.out.println(Rift.fileName + "::" + (i + 1) + error);
+					System.out.println(String.format("%s::%d:%s\n%s", Rift.fileName, (i + 1), error, line.rawLine));
 			}
 		}
 		
@@ -495,7 +470,7 @@ class HelperMethods {
 					return String.format("%4X", Integer.parseInt(opcode, 2)).replace(' ', '0');
 				}
 				
-				return String.format("%2X", jump).replace(' ', '0');
+				return String.format("%2X", jump < 0 ? jump + 256 : jump).replace(' ', '0');
 			}
 		}
 		
@@ -542,10 +517,10 @@ class HelperMethods {
 	static void createHex() {
 		
 		try {
-			int checksum;
 			String temp;
+			int checksum;
 			int dotIndex = Rift.fileName.lastIndexOf(".");
-			PrintWriter hexFile = new PrintWriter(Rift.fileName.substring(0, dotIndex > 0 ? dotIndex : Rift.fileName.length()) + ".hex", "UTF-8");
+			PrintWriter hexFile = new PrintWriter(Rift.fileName.substring(0, dotIndex > 0 ? dotIndex : Rift.fileName.length()) + ".hex");
 			
 			for(Line line : Rift.lines) {
 				if(line.parsedLine == null)
@@ -554,7 +529,7 @@ class HelperMethods {
 				checksum = 0;
 				
 				if(line.m != null) {
-					temp = String.format("%2X%S00%S", line.m.size, line.address, line.m.opcode).replace(' ', '0');
+					temp = String.format("%2x%s00%s", line.m.size, line.address, line.m.opcode).replace(' ', '0');
 					
 					for(int i = 0; i < temp.length() / 2; i++)
 						checksum += Integer.parseInt(temp.substring(2 * i, 2 * (i + 1)), 16);

@@ -1,9 +1,9 @@
-abstract class Directives {
+abstract class Directive {
 	
 	abstract boolean execute(String operands, Line line) throws Exception;
 }
 
-class DB extends Directives {
+class DB extends Directive {
 	
 	String hexify(String s) throws Exception {
 		
@@ -29,13 +29,13 @@ class DB extends Directives {
 			s = Integer.toHexString(temp);
 			
 			if(s.length() > 2)
-				throw new Exception();
+				throw new Exception("Directive DB expects 8-bit data or String.");
 			
 			return String.format("%2S", s).replace(' ', '0');
 		}
 		
-		catch(Exception e) {
-			throw new Exception("Directive DB expects 8-bit data or String.");
+		catch(NumberFormatException e) {
+			throw new Exception("Invalid number for given base.");
 		}
 	}
 	
@@ -44,9 +44,7 @@ class DB extends Directives {
 		int size;
 		String temp = "";
 		
-		operands = operands.replace("#", "");
-		
-		for(String data : operands.split(","))
+		for(String data : operands.replace("#", "").split(","))
 			temp += this.hexify(data);
 		
 		size = temp.length() / 2;
@@ -62,7 +60,7 @@ class DB extends Directives {
 	}
 }
 
-class ORG extends Directives {
+class ORG extends Directive {
 	
 	boolean execute(String operands, Line line) throws Exception {
 		
@@ -72,7 +70,7 @@ class ORG extends Directives {
 	}
 }
 
-class BIT extends Directives {
+class BIT extends Directive {
 	
 	boolean execute(String operands, Line line) throws Exception {
 		
@@ -87,7 +85,7 @@ class BIT extends Directives {
 	}
 }
 
-class EQU extends Directives {
+class EQU extends Directive {
 	
 	boolean execute(String operands, Line line) throws Exception {
 		
@@ -102,7 +100,7 @@ class EQU extends Directives {
 	}
 }
 
-class END extends Directives {
+class END extends Directive {
 	
 	boolean execute(String operands, Line line) throws Exception {
 		

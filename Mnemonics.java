@@ -7,17 +7,20 @@ class Mnemonics {
 	int size;
 	String opcode;
 	String mnemonic;
-	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z0-9]*");
+	final static Pattern LABEL = Pattern.compile("[A-Z][A-Z\\d]*");
 	
-	Mnemonics(String mnemonic) throws Exception {
+	Mnemonics(String line) throws Exception {
 		
-		if(!Rift.opcodes.containsKey(mnemonic))
-			throw new Exception("Unidentified Mnemonic: " + mnemonic);
+		String[] tokens = line.split(" ", 2);
 		
-		this.mnemonic = mnemonic;
+		if(!Rift.opcodes.containsKey(tokens[0]))
+			throw new Exception("Unidentified Mnemonic: " + tokens[0]);
+		
+		this.mnemonic = tokens[0];
+		this.validate(tokens.length == 1 ? "" : tokens[1]);
 	}
 	
-	String hexify(String s) throws Exception {
+	String hexify(String s, int i) throws Exception {
 		
 		int temp;
 		
@@ -40,10 +43,10 @@ class Mnemonics {
 			
 			s = Integer.toHexString(temp);
 			
-			if((this.opcode.equals("90") && s.length() < 5) || s.length() < 3)
-				return ((this.opcode.equals("90") ? "0000" : "00") + s).substring(s.length()).toUpperCase();
+			if(s.length() > i * 2)
+				throw new Exception(String.format("Mnemonic %s expects %d-byte address/data.", this.mnemonic, i));
 			
-			throw new Exception(String.format("Mnemonic %s expects %d-bit address/data.", this.mnemonic, this.opcode.equals("90") ? 16 : 8));
+			return String.format("%" + i * 2 + "S", s).replace(' ', '0');
 		}
 		
 		catch(NumberFormatException e) {
@@ -59,18 +62,18 @@ class Mnemonics {
 	*	@return boolean - True, if operands are proper else false.
 	*	@throws Exception - Passes exception thrown by hexify().
 	*/
-	boolean validate(String operands) throws Exception {
+	void validate(String operands) throws Exception {
 		
 		Matcher match;
 		String operand;
-		ArrayList<Object[]> op = Rift.opcodes.get(this.mnemonic);
+		ArrayList<Opcode> op = Rift.opcodes.get(this.mnemonic);
 		
-		for(Object[] o : op) {
-			match = ((Pattern) o[0]).matcher(operands);
+		for(Opcode o : op) {
+			match = o.p.matcher(operands);
 			
 			if(match.matches()) {
-				this.opcode = (String) o[1];
-				this.size = (Integer) o[2];
+				this.opcode = o.opcode;
+				this.size = o.opSize;
 				
 				for(int i = 1; i <= match.groupCount(); i++) {
 					operand = match.group(i);
@@ -79,13 +82,13 @@ class Mnemonics {
 						this.opcode += ":" + operand;
 					
 					else
-						this.opcode += this.hexify(operand);
+						this.opcode += this.hexify(operand, o.operandSize.get(i - 1));
 				}
 				
-				return true;
+				return;
 			}
 		}
 		
-		return false;
+		throw new Exception("Invalid operand(s) for Mnemonic " + this.mnemonic);
 	}
 }

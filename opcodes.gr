@@ -1,0 +1,256 @@
+NOP  1
+AJMP ([A-Z][A-Z\d]*) 2 1
+LJMP ([A-Z][A-Z\d]*) 3 2
+RR A 1
+INC A 1
+INC (\d[\dA-F]*[BDH]?) 2 1
+INC @R0 1
+INC @R1 1
+INC R0 1
+INC R1 1
+INC R2 1
+INC R3 1
+INC R4 1
+INC R5 1
+INC R6 1
+INC R7 1
+JBC (\d[\dA-F]*[BDH]?),([A-Z][A-Z\d]*) 3 1 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+LCALL ([A-Z][A-Z\d]*) 3 2
+RRC A 1
+DEC A 1
+DEC (\d[\dA-F]*[BDH]?) 2 1
+DEC @R0 1
+DEC @R1 1
+DEC R0 1
+DEC R1 1
+DEC R2 1
+DEC R3 1
+DEC R4 1
+DEC R5 1
+DEC R6 1
+DEC R7 1
+JB (\d[\dA-F]*[BDH]?),([A-Z][A-Z\d]*) 3 1 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+RET  1
+RL A 1
+ADD A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+ADD A,(\d[\dA-F]*[BDH]?) 2 1
+ADD A,@R0 1
+ADD A,@R1 1
+ADD A,R0 1
+ADD A,R1 1
+ADD A,R2 1
+ADD A,R3 1
+ADD A,R4 1
+ADD A,R5 1
+ADD A,R6 1
+ADD A,R7 1
+JNB (\d[\dA-F]*[BDH]?),([A-Z][A-Z\d]*) 3 1 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+RETI  1
+RLC A 1
+ADDC A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+ADDC A,(\d[\dA-F]*[BDH]?) 2 1
+ADDC A,@R0 1
+ADDC A,@R1 1
+ADDC A,R0 1
+ADDC A,R1 1
+ADDC A,R2 1
+ADDC A,R3 1
+ADDC A,R4 1
+ADDC A,R5 1
+ADDC A,R6 1
+ADDC A,R7 1
+JC ([A-Z][A-Z\d]*) 2 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+ORL (\d[\dA-F]*[BDH]?),A 2 1
+ORL (\d[\dA-F]*[BDH]?),#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 3 1 1
+ORL A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+ORL A,(\d[\dA-F]*[BDH]?) 2 1
+ORL A,@R0 1
+ORL A,@R1 1
+ORL A,R0 1
+ORL A,R1 1
+ORL A,R2 1
+ORL A,R3 1
+ORL A,R4 1
+ORL A,R5 1
+ORL A,R6 1
+ORL A,R7 1
+JNC ([A-Z][A-Z\d]*) 2 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+ANL (\d[\dA-F]*[BDH]?),A 2 1
+ANL (\d[\dA-F]*[BDH]?),#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 3 1 1
+ANL A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+ANL A,(\d[\dA-F]*[BDH]?) 2 1
+ANL A,@R0 1
+ANL A,@R1 1
+ANL A,R0 1
+ANL A,R1 1
+ANL A,R2 1
+ANL A,R3 1
+ANL A,R4 1
+ANL A,R5 1
+ANL A,R6 1
+ANL A,R7 1
+JZ ([A-Z][A-Z\d]*) 2 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+XRL (\d[\dA-F]*[BDH]?),A 2 1
+XRL (\d[\dA-F]*[BDH]?),#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 3 1 1
+XRL A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+XRL A,(\d[\dA-F]*[BDH]?) 2 1
+XRL A,@R0 1
+XRL A,@R1 1
+XRL A,R0 1
+XRL A,R1 1
+XRL A,R2 1
+XRL A,R3 1
+XRL A,R4 1
+XRL A,R5 1
+XRL A,R6 1
+XRL A,R7 1
+JNZ ([A-Z][A-Z\d]*) 2 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+ORL C,(\d[\dA-F]*[BDH]?) 2 1
+JMP @A\+DPTR 1
+MOV A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV (\d[\dA-F]*[BDH]?),#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 3 1 1
+MOV @R0,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV @R1,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R0,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R1,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R2,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R3,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R4,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R5,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R6,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+MOV R7,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+SJMP ([A-Z][A-Z\d]*) 2 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+ANL C,(\d[\dA-F]*[BDH]?) 2 1
+MOVC A,@A\+DPTR 1
+DIV AB 1
+MOV (\d[\dA-F]*[BDH]?),(\d[\dA-F]*[BDH]?) 3 1 1
+MOV (\d[\dA-F]*[BDH]?),@R0 2 1
+MOV (\d[\dA-F]*[BDH]?),@R1 2 1
+MOV (\d[\dA-F]*[BDH]?),R0 2 1
+MOV (\d[\dA-F]*[BDH]?),R1 2 1
+MOV (\d[\dA-F]*[BDH]?),R2 2 1
+MOV (\d[\dA-F]*[BDH]?),R3 2 1
+MOV (\d[\dA-F]*[BDH]?),R4 2 1
+MOV (\d[\dA-F]*[BDH]?),R5 2 1
+MOV (\d[\dA-F]*[BDH]?),R6 2 1
+MOV (\d[\dA-F]*[BDH]?),R7 2 1
+MOV DPTR,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 3 2
+ACALL ([A-Z][A-Z\d]*) 2 1
+MOV (\d[\dA-F]*[BDH]?),C 2 1
+MOVC A,@A\+DPTR 1
+SUBB A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\") 2 1
+SUBB A,(\d[\dA-F]*[BDH]?) 2 1
+SUBB A,@R0 1
+SUBB A,@R1 1
+SUBB A,R0 1
+SUBB A,R1 1
+SUBB A,R2 1
+SUBB A,R3 1
+SUBB A,R4 1
+SUBB A,R5 1
+SUBB A,R6 1
+SUBB A,R7 1
+ORL C,(/(?:[01]*B|\d*D?|\d[A-F\d]*H)) 2 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+MOV C,(\d[\dA-F]*[BDH]?) 2 1
+INC DPTR 1
+MUL AB 1
+"RESERVED"  0
+MOV @R0,(\d[\dA-F]*[BDH]?) 2 1
+MOV @R1,(\d[\dA-F]*[BDH]?) 2 1
+MOV R0,(\d[\dA-F]*[BDH]?) 2 1
+MOV R1,(\d[\dA-F]*[BDH]?) 2 1
+MOV R2,(\d[\dA-F]*[BDH]?) 2 1
+MOV R3,(\d[\dA-F]*[BDH]?) 2 1
+MOV R4,(\d[\dA-F]*[BDH]?) 2 1
+MOV R5,(\d[\dA-F]*[BDH]?) 2 1
+MOV R6,(\d[\dA-F]*[BDH]?) 2 1
+MOV R7,(\d[\dA-F]*[BDH]?) 2 1
+ANL C,(/(?:[01]*B|\d*D?|\d[A-F\d]*H)) 2 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+CPL (\d[\dA-F]*[BDH]?) 2 1
+CPL C 1
+CJNE A,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE A,(\d[\dA-F]*[BDH]?),([A-Z][A-Z\d]*) 3 1 1
+CJNE @R0,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE @R1,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R0,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R1,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R2,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R3,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R4,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R5,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R6,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+CJNE R7,#(-?\d[\dA-F]*[BDH]?|\"[\dA-F]+\"),([A-Z][A-Z\d]*) 3 1 1
+PUSH (\d[\dA-F]*[BDH]?) 2 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+CLR (\d[\dA-F]*[BDH]?) 2 1
+CLR C 1
+SWAP A 1
+XCH A,(\d[\dA-F]*[BDH]?) 2 1
+XCH A,@R0 1
+XCH A,@R1 1
+XCH A,R0 1
+XCH A,R1 1
+XCH A,R2 1
+XCH A,R3 1
+XCH A,R4 1
+XCH A,R5 1
+XCH A,R6 1
+XCH A,R7 1
+POP (\d[\dA-F]*[BDH]?) 2 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+SETB (\d[\dA-F]*[BDH]?) 2 1
+SETB C 1
+DA A 1
+DJNZ (\d[\dA-F]*[BDH]?),([A-Z][A-Z\d]*) 3 1 1
+XCHD A,@R0 1
+XCHD A,@R1 1
+DJNZ R0,([A-Z][A-Z\d]*) 2 1
+DJNZ R1,([A-Z][A-Z\d]*) 2 1
+DJNZ R2,([A-Z][A-Z\d]*) 2 1
+DJNZ R3,([A-Z][A-Z\d]*) 2 1
+DJNZ R4,([A-Z][A-Z\d]*) 2 1
+DJNZ R5,([A-Z][A-Z\d]*) 2 1
+DJNZ R6,([A-Z][A-Z\d]*) 2 1
+DJNZ R7,([A-Z][A-Z\d]*) 2 1
+MOVX A,@DPTR 1
+AJMP ([A-Z][A-Z\d]*) 2 1
+MOVX A,@R0 1
+MOVX A,@R1 1
+CLR A 1
+MOV A,(\d[\dA-F]*[BDH]?) 2 1
+MOV A,@R0 1
+MOV A,@R1 1
+MOV A,R0 1
+MOV A,R1 1
+MOV A,R2 1
+MOV A,R3 1
+MOV A,R4 1
+MOV A,R5 1
+MOV A,R6 1
+MOV A,R7 1
+MOVX @DPTR,A 1
+ACALL ([A-Z][A-Z\d]*) 2 1
+MOVX @R0,A 1
+MOVX @R1,A 1
+CPL A 1
+MOV (\d[\dA-F]*[BDH]?),A 2 1
+MOV @R0,A 1
+MOV @R1,A 1
+MOV R0,A 1
+MOV R1,A 1
+MOV R2,A 1
+MOV R3,A 1
+MOV R4,A 1
+MOV R5,A 1
+MOV R6,A 1
+MOV R7,A 1
