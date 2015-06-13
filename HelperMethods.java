@@ -78,7 +78,6 @@ class HelperMethods {
 		
 		try {
 			String[] tokens;
-			
 			BufferedReader directiveSource = new BufferedReader(new FileReader("directives.gr"));
 			
 			for(i = 1; (line = directiveSource.readLine()) != null; i++) {
@@ -135,19 +134,27 @@ class HelperMethods {
 	static void getSymbols() {
 		
 		int i = 0;
+		Matcher m;
 		String line = "";
+		final Pattern ASCII_DATA = Pattern.compile("\"\\p{ASCII}+?\"");
 		
 		try {
 			String[] tokens;
 			BufferedReader symbolSource = new BufferedReader(new FileReader("symbols.txt"));
 			
 			for(i = 0; (line = symbolSource.readLine()) != null; i++) {
-				tokens = line.split(" ");
 				
-				if(tokens.length != 2)
+				tokens = line.split(" ", 2);
+				
+				if(tokens.length == 1)
 					throw new Exception();
 				
-				Rift.symbols.put(tokens[0], tokens[1]);
+				m = ASCII_DATA.matcher(tokens[1]);
+				
+				while(m.find())
+					tokens[1] = tokens[1].replace(m.group(), HelperMethods.asciify(m.group()));
+				
+				Rift.symbols.put(tokens[0].toUpperCase(), tokens[1].toUpperCase());
 			}
 			
 			symbolSource.close();
@@ -270,8 +277,12 @@ class HelperMethods {
 			tokens = temp.substring(index).split(",");
 			temp = temp.substring(0, index);
 			
-			for(int i = 0; i < tokens.length; i++)
-				temp += (Rift.symbols.containsKey(tokens[i]) ? Rift.symbols.get(tokens[i]) : tokens[i]) + ",";
+			for(int i = 0; i < tokens.length; i++) {
+				while(Rift.symbols.containsKey(tokens[i]))
+					tokens[i] = Rift.symbols.get(tokens[i]);
+				
+				temp += tokens[i] + ",";
+			}
 			
 			temp = temp.substring(0, temp.length() - 1);
 			tokens = temp.split(" ", 2);
