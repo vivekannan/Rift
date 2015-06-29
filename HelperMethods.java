@@ -47,17 +47,17 @@ class HelperMethods {
 		
 		catch(NumberFormatException e) {
 			System.out.println(String.format("opcodes.gr::%d:Invalid size for opcode/operand\n%s.", i + 1, line));
-			System.exit(-4);
+			System.exit(-3);
 		}
 		
 		catch(PatternSyntaxException e) {
 			System.out.println(String.format("opcodes.gr::%d:Syntax error in Regex.\n%s", i + 1, line));
-			System.exit(-3);
+			System.exit(-4);
 		}
 		
 		catch(Exception e) {
 			System.out.println(String.format("opcodes.gr::%d:Invalid format for opcode grammar declaration. Expecting MNEMONIC REGEX OPCODE-SIZE [OPERANDS-SIZE, ].\n%s", i + 1, line));
-			System.exit(-3);
+			System.exit(-5);
 		}
 	}
 	
@@ -86,8 +86,11 @@ class HelperMethods {
 				if(tokens.length != 2)
 					throw new Exception();
 				
-				//Check if class for directive is defined.
-				Class.forName(tokens[0]);
+				//Check if class for directive is defined and inherites Directive class.
+				if(!Directive.class.isAssignableFrom(Class.forName(tokens[0]))) {
+					System.out.println(tokens[0] + " doesn't inherit Directive class.");
+					System.exit(-6);
+				}
 				
 				Rift.directives.put(tokens[0], Pattern.compile(tokens[1]));
 			}
@@ -97,27 +100,27 @@ class HelperMethods {
 		
 		catch(FileNotFoundException e) {
 			System.out.println("Can't find directives.gr!");
-			System.exit(-5);
+			System.exit(-7);
 		}
 		
 		catch(IOException e) {
 			System.out.println("Can't read directives.gr!");
-			System.exit(-6);
+			System.exit(-8);
 		}
 		
 		catch(ClassNotFoundException e) {
 			System.out.println(String.format("directives.gr::%d:Class for directive not defined.\n%s", i, line));
-			System.exit(-8);
+			System.exit(-9);
 		}
 		
 		catch(PatternSyntaxException e) {
 			System.out.println(String.format("directives.gr::%d:Syntax error in Regex.\n%s", i, line));
-			System.exit(-7);
+			System.exit(-10);
 		}
 		
 		catch(Exception e) {
 			System.out.println(String.format("directives.gr::%d:Invalid format for directive grammar. Expecting DIRECTIVE REGEX\n%s", i, line));
-			System.exit(-7);
+			System.exit(-11);
 		}
 	}
 	
@@ -162,17 +165,17 @@ class HelperMethods {
 		
 		catch(FileNotFoundException e) {
 			System.out.println("Can't find symbols.txt!");
-			System.exit(-9);
+			System.exit(-12);
 		}
 		
 		catch(IOException e) {
 			System.out.println("Can't read symbols.txt!");
-			System.exit(-10);
+			System.exit(-13);
 		}
 		
 		catch(Exception e) {
 			System.out.println(String.format("symbols.txt::%d:Invalid format for symbol definition. Expecting SYMBOL VALUE.\n%s", (i + 1), line));
-			System.exit(-11);
+			System.exit(-14);
 		}
 	}
 	
@@ -198,12 +201,12 @@ class HelperMethods {
 		
 		catch(FileNotFoundException e) {
 			System.out.println(Rift.fileName + " not found.");
-			System.exit(-12);
+			System.exit(-15);
 		}
 		
 		catch(IOException e) {
 			System.out.println(Rift.fileName + " cannot be opened/closed.");
-			System.exit(-13);
+			System.exit(-16);
 		}
 	}
 	
@@ -364,7 +367,7 @@ class HelperMethods {
 		}
 		
 		if(errors)
-			System.exit(-14);
+			System.exit(-17);
 	}
 	
 	/**
